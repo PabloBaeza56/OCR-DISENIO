@@ -1,28 +1,13 @@
 package main;
 
-
-
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import javax.imageio.ImageIO;
-
-
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
-
-
 import org.opencv.core.Mat;
-
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -56,9 +41,19 @@ public class Main {
         String regex = "[^A-Z0-9\\s]"; //regex para el fente
             //String regex = "[^A-Z<]+"; //regex para el reverso
         String nuevaCadena = result.replaceAll(regex, "");
-            
+        String textoSinSaltosDeLinea = nuevaCadena.replaceAll("\\n", "");
+        String cadenaf = textoSinSaltosDeLinea.trim();
+        String cadena = cadenaf.replaceAll("  ", " ");
+        String cadenag = cadena.replaceAll(" ", "-");
+        String cadenax = cadenag.replaceAll("--", "-");
+        
+        
 
-        System.out.println(nuevaCadena);
+        // Imprimir el resultado
+        System.out.println("Cadena original: " + cadenax);
+        
+  
+        //System.out.println(textoSinSaltosDeLinea.trim());
 
     }
 
@@ -67,7 +62,6 @@ public class Main {
             BufferedImage bufferedImage = ImageIO.read(new File(imagePath));
             return tesseract.doOCR(bufferedImage);
         } catch (IOException e) {
-            e.printStackTrace();
         }
         return "";
     }

@@ -1,30 +1,17 @@
 package main;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.imageio.ImageIO;
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-
-
-public class Main {
-  
-
-    public static void main(String[] args) throws TesseractException, IOException {
+public class ManejoImagenes {
+    public void EncontrarContornos(){
         // Carga la imagen
         nu.pattern.OpenCV.loadShared();
         Mat src = Imgcodecs.imread("C:\\Users\\pablo\\OneDrive\\Escritorio\\ArchivoPrueba.png");
@@ -57,5 +44,7 @@ public class Main {
 
         // Guarda la imagen con los rectángulos dibujados
         Imgcodecs.imwrite("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDA.png", src);
+        
     }
+    
 }

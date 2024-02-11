@@ -1,15 +1,26 @@
 package main;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import net.sourceforge.tess4j.ITesseract;
+
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+
+import java.io.IOException;
+
+
+
+import javax.imageio.ImageIO;
+import net.sourceforge.tess4j.ITesseract;
+import org.opencv.core.MatOfByte;
+
+import org.opencv.core.Size;
 
 public class OCR {
     private Tesseract tesseract;
@@ -21,18 +32,7 @@ public class OCR {
         System.setProperty("TESSDATA_PREFIX", tessdataPath);
         this.tesseract.setLanguage("spa");
     }
-    
-    public String AnalizarImagen(String URLimagen) throws TesseractException{
-        String text = "";
-        try {
-            text = tesseract.doOCR(new File(URLimagen));
-        } catch (TesseractException e) {
-            System.err.println("Error al realizar OCR: " + e.getMessage());
-        }
-        return text;   
-    }
-    
-    //MUCHO MEJOR
+  
     public String MetodoAlternativo(String URLimagen) throws TesseractException{
         String tessdataPath = "C:\\Users\\pablo\\OneDrive\\Documentos\\NetBeansProjects\\OCR-DISENIO\\src\\main\\java\\main";
         System.setProperty("TESSDATA_PREFIX", tessdataPath);
@@ -40,7 +40,7 @@ public class OCR {
         nu.pattern.OpenCV.loadShared();
 
         // Cargar la imagen
-        Mat image = Imgcodecs.imread("C:\\Users\\pablo\\OneDrive\\Escritorio\\img20240209_18444422.png");
+        Mat image = Imgcodecs.imread(URLimagen);
 
         // Convertir la imagen a escala de grises
         Mat grayImage = new Mat();
@@ -52,7 +52,7 @@ public class OCR {
         tesseract.setLanguage("spa");
 
         // Realizar OCR en la imagen
-        String result = doOCRWithBufferedImage("C:\\Users\\pablo\\OneDrive\\Escritorio\\img20240209_18444422.png", tesseract);
+        String result = doOCRWithBufferedImage(URLimagen, tesseract);
         //System.out.println("Texto detectado: " + result);
         
         String regex = "[^A-Z0-9\\s]"; //regex para el fente
@@ -78,16 +78,4 @@ public class OCR {
         }
         return "";
     }
-    
 }
-      /*
-            OCR osi = new OCR();
-            String text = osi.AnalizarImagen("C:\\Users\\pablo\\OneDrive\\Escritorio\\img20240209_18444422.png");
-            
-            String regex = "[^A-Z0-9/\\s]"; //regex para el fente
-            //String regex = "[^A-Z<]+"; //regex para el reverso
-            String nuevaCadena = text.replaceAll(regex, "");
-            
-
-            System.out.println(nuevaCadena);
-*/

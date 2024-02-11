@@ -1,26 +1,15 @@
 package main;
 
-
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
-
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-
-import java.io.IOException;
-
-
-
-import javax.imageio.ImageIO;
-import net.sourceforge.tess4j.ITesseract;
-import org.opencv.core.MatOfByte;
-
-import org.opencv.core.Size;
 
 public class OCR {
     private Tesseract tesseract;
@@ -32,45 +21,15 @@ public class OCR {
         System.setProperty("TESSDATA_PREFIX", tessdataPath);
         this.tesseract.setLanguage("spa");
     }
-  
+    
     public String MetodoAlternativo(String URLimagen) throws TesseractException{
-        String tessdataPath = "C:\\Users\\pablo\\OneDrive\\Documentos\\NetBeansProjects\\OCR-DISENIO\\src\\main\\java\\main";
-        System.setProperty("TESSDATA_PREFIX", tessdataPath);
-        
         nu.pattern.OpenCV.loadShared();
 
-        // Cargar la imagen
-        Mat image = Imgcodecs.imread(URLimagen);
-
-        // Convertir la imagen a escala de grises
-        Mat grayImage = new Mat();
-        Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
-
-        // Crear un objeto Tesseract
-        ITesseract tesseract = new Tesseract();
-        tesseract.setDatapath(tessdataPath);
-        tesseract.setLanguage("spa");
-
-        // Realizar OCR en la imagen
-        String result = doOCRWithBufferedImage(URLimagen, tesseract);
-        //System.out.println("Texto detectado: " + result);
-        
-        String regex = "[^A-Z0-9\\s]"; //regex para el fente
-            //String regex = "[^A-Z<]+"; //regex para el reverso
-        String nuevaCadena = result.replaceAll(regex, "");
-        String textoSinSaltosDeLinea = nuevaCadena.replaceAll("\\n", "");
-        String cadenaf = textoSinSaltosDeLinea.trim();
-        String cadena = cadenaf.replaceAll("  ", " ");
-        String cadenag = cadena.replaceAll(" ", "-");
-        String cadenax = cadenag.replaceAll("--", "-");
-        
-        
-
-        // Imprimir el resultado
-        System.out.println("Cadena original: " + cadenax);
-        return cadenax;
+        String result = doOCRWithBufferedImage(URLimagen);
+      
+        return result;
     }
-    private static String doOCRWithBufferedImage(String imagePath, ITesseract tesseract) throws TesseractException {
+    private String doOCRWithBufferedImage(String imagePath) throws TesseractException {
         try {
             BufferedImage bufferedImage = ImageIO.read(new File(imagePath));
             return tesseract.doOCR(bufferedImage);
@@ -78,4 +37,11 @@ public class OCR {
         }
         return "";
     }
+  
+
+    
 }
+
+/*
+
+*/

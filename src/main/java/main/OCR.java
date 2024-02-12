@@ -3,13 +3,9 @@ package main;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 
 public class OCR {
     private Tesseract tesseract;
@@ -23,12 +19,12 @@ public class OCR {
     }
     
     public String MetodoAlternativo(String URLimagen) throws TesseractException{
+        
         nu.pattern.OpenCV.loadShared();
-
         String result = doOCRWithBufferedImage(URLimagen);
-      
         return result;
     }
+    
     private String doOCRWithBufferedImage(String imagePath) throws TesseractException {
         try {
             BufferedImage bufferedImage = ImageIO.read(new File(imagePath));
@@ -37,11 +33,6 @@ public class OCR {
         }
         return "";
     }
-  
 
-    
 }
 
-/*
-
-*/

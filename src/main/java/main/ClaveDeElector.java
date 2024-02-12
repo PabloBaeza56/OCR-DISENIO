@@ -15,7 +15,7 @@ public class ClaveDeElector {
     private char diaSegundoDigito;
     private char entidadFederativaPrimerDigito;
     private char entidadFederativaSegundoDigito;
-    private char genero;
+    private char sexo;
 
     // Constructor
     public ClaveDeElector(String cadenaOficial) {
@@ -41,7 +41,7 @@ public class ClaveDeElector {
         diaSegundoDigito = caracteres[11];
         entidadFederativaPrimerDigito = caracteres[12];
         entidadFederativaSegundoDigito = caracteres[13];
-        genero = caracteres[14];
+        sexo = caracteres[14];
     }
 
     public char getPrimeraLetraPrimerApellido() {
@@ -100,8 +100,10 @@ public class ClaveDeElector {
         return entidadFederativaSegundoDigito;
     }
 
-    public char getGenero() {
-        return genero;
+    public char getSexo() {
+        return sexo;
     }
+    
+    
 
 }

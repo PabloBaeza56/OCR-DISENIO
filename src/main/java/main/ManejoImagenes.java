@@ -24,45 +24,50 @@ import java.io.IOException;
 
 public class ManejoImagenes {
 
-    public void EncontrarContornos(String ArchivoVerificar) {
-        nu.pattern.OpenCV.loadShared();
-        Mat src = Imgcodecs.imread(ArchivoVerificar);
+    public void EncontrarContornos(String ArchivoVerificar, String ArchivoSalida) {
+    nu.pattern.OpenCV.loadShared();
+    Mat src = Imgcodecs.imread(ArchivoVerificar);
 
-        // Convierte la imagen a escala de grises
-        Mat gray = new Mat();
-        Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
+    // Convierte la imagen a escala de grises
+    Mat gray = new Mat();
+    Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
 
-        // Aplica un filtro Gaussiano para suavizar la imagen
-        Imgproc.GaussianBlur(gray, gray, new Size(5, 5), 0);
+// Aplica un filtro Gaussiano para suavizar la imagen
+    Imgproc.GaussianBlur(gray, gray, new Size(5, 5), 0);
 
-        // Detecta los bordes usando el algoritmo de Canny
-        Mat edges = new Mat();
-        Imgproc.Canny(gray, edges, 50, 150);
+    // Detecta los bordes usando el algoritmo de Canny
+    Mat edges = new Mat();
+    Imgproc.Canny(gray, edges, 50, 150);
 
-        // Encuentra los contornos
-        List<MatOfPoint> contours = new ArrayList<>();
-        Mat hierarchy = new Mat();
-        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+    // Encuentra los contornos
+    List<MatOfPoint> contours = new ArrayList<>();
+    Mat hierarchy = new Mat();
+    Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
 
-        // Dibuja los rectángulos
-        for (MatOfPoint contour : contours) {
-            Rect rect = Imgproc.boundingRect(contour);
-            // Agrega un margen alrededor del rectángulo encontrado
-            int margin = 10;
-            int x = Math.max(rect.x - margin, 0);
-            int y = Math.max(rect.y - margin, 0);
-            int width = Math.min(rect.width + 2 * margin, src.cols() - x);
-            int height = Math.min(rect.height + 2 * margin, src.rows() - y);
-            Rect expandedRect = new Rect(x, y, width, height);
-            // Solo dibuja los rectángulos que son más grandes que un cierto tamaño
-            if (expandedRect.width > 600 && expandedRect.height > 400 && expandedRect.width < 1000 && expandedRect.height < 800) {
-                Imgproc.rectangle(src, expandedRect.tl(), expandedRect.br(), new Scalar(0, 0, 255), 2);
-            }
+    // Dibuja los rectángulos
+    for (MatOfPoint contour : contours) {
+        Rect rect = Imgproc.boundingRect(contour);
+        // Agrega un margen alrededor del rectángulo encontrado
+        int margin = 10;
+        int x = Math.max(rect.x - margin, 0);
+        int y = Math.max(rect.y - margin, 0);
+        int width = Math.min(rect.width + 2 * margin, src.cols() - x);
+        int height = Math.min(rect.height + 2 * margin, src.rows() - y);
+        Rect expandedRect = new Rect(x, y, width, height);
+        // Solo dibuja los rectángulos que son más grandes que un cierto tamaño
+        if (expandedRect.width > 500 && expandedRect.height > 300 && expandedRect.width < 1100 && expandedRect.height < 900) {
+            Imgproc.rectangle(src, expandedRect.tl(), expandedRect.br(), new Scalar(0, 0, 255), 2);
+            // Imprime las coordenadas de las esquinas
+            System.out.println("Esquina superior izquierda: (" + expandedRect.x + ", " + expandedRect.y + ")");
+            System.out.println("Esquina superior derecha: (" + (expandedRect.x + expandedRect.width) + ", " + expandedRect.y + ")");
+            System.out.println("Esquina inferior izquierda: (" + expandedRect.x + ", " + (expandedRect.y + expandedRect.height) + ")");
+            System.out.println("Esquina inferior derecha: (" + (expandedRect.x + expandedRect.width) + ", " + (expandedRect.y + expandedRect.height) + ")");
         }
-
-        // Guarda la imagen con los rectángulos dibujados
-        Imgcodecs.imwrite(ArchivoVerificar, src);
     }
+
+    // Guarda la imagen con los rectángulos dibujados en un archivo de salida
+    Imgcodecs.imwrite(ArchivoSalida, src);
+}
 
     public void DetectarRostros(String cadenaRuta) {
         nu.pattern.OpenCV.loadShared();
@@ -79,14 +84,19 @@ public class ManejoImagenes {
         Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
         Imgproc.equalizeHist(grayImage, grayImage);
 
-        // Detecta caras en la imagen
+       // Detecta caras en la imagen
         MatOfRect faceDetections = new MatOfRect();
-        faceDetector.detectMultiScale(grayImage, faceDetections, 1.1, 5, 0, new Size(30, 30));
-
+        faceDetector.detectMultiScale(grayImage, faceDetections, 1.1, 2, 0, new Size(20, 20), new Size(image.width(), image.height())); // Ajuste de parámetros
         // Dibuja un rectángulo alrededor de cada cara detectada
         for (Rect rect : faceDetections.toArray()) {
             Imgproc.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
                     new Scalar(0, 255, 0), 2);
+            
+            // Imprime las coordenadas de las esquinas del rectángulo
+            System.out.println("Esquina superior izquierda: (" + rect.x + ", " + rect.y + ")");
+            System.out.println("Esquina superior derecha: (" + (rect.x + rect.width) + ", " + rect.y + ")");
+            System.out.println("Esquina inferior izquierda: (" + rect.x + ", " + (rect.y + rect.height) + ")");
+            System.out.println("Esquina inferior derecha: (" + (rect.x + rect.width) + ", " + (rect.y + rect.height) + ")");
         }
 
         // Muestra el número de caras detectadas
@@ -160,7 +170,7 @@ public class ManejoImagenes {
                 }
                 if (!isDuplicate) {
                     croppedImages.add(cropped);
-                    Imgcodecs.imwrite(cadenaRuta + "XXXX" + i + ".jpg", cropped);
+                    Imgcodecs.imwrite(cadenaRuta + "XXXX" + i + ".png", cropped);
                     i++;
                 }
             }

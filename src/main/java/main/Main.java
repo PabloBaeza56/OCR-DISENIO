@@ -1,6 +1,7 @@
 package main;
 
 import java.io.IOException;
+
 import net.sourceforge.tess4j.TesseractException;
 
 public class Main {
@@ -26,6 +27,7 @@ public class Main {
         */
        
         ManejoImagenes jj = new ManejoImagenes();
+        /*
         int ContadorPaginas = jj.PDFtoPNGConverter("C:\\Users\\pablo\\OneDrive\\Escritorio\\original.pdf", "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG");
 
         for (int i = 1; i <= ContadorPaginas; i++){
@@ -33,19 +35,28 @@ public class Main {
             jj.DividirImagenesPorContorno("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\page_"+i+".png");
             
         }
+        */
+        
+        jj.EncontrarContornos("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivo.png", "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png");
+        //jj.DividirImagenesPorContorno("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png");
+        jj.DetectarRostros("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png");
+       
         
         
-
-        //jj.DetectarRostros("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\page_1.pngXXXX1.jpg");
+        
+        
         /*
         OCR conti = new OCR();
-        String salida = (conti.MetodoAlternativo("C:\\Users\\pablo\\OneDrive\\Escritorio\\ArchivoPrueba.png"));
+        String salida = (conti.MetodoAlternativo("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.pngXXXX0.png"));
         PersonaINE ciudadano = new PersonaINE();
         ManejoCadenas manejador = new ManejoCadenas(salida, ciudadano);
         manejador.GuardarSubcadenasConMasDeUnDigito(manejador.LimpiarCadenaValoresBasura());
         manejador.EliminarElementosBasura();
         System.out.println(salida);
         */
+       
+       
+        
         /*
         manejador.BuscarCURPyClaveElector();
         manejador.EncontrarClaveElector();

@@ -21,49 +21,72 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ManejoImagenes {
 
-    public void EncontrarContornos(String ArchivoVerificar, String ArchivoSalida) {
-    nu.pattern.OpenCV.loadShared();
-    Mat src = Imgcodecs.imread(ArchivoVerificar);
+    Set<Coordenadas> coordenadasSet;
+    
+    public ManejoImagenes(){
 
-    // Convierte la imagen a escala de grises
-    Mat gray = new Mat();
-    Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
-
-// Aplica un filtro Gaussiano para suavizar la imagen
-    Imgproc.GaussianBlur(gray, gray, new Size(5, 5), 0);
-
-    // Detecta los bordes usando el algoritmo de Canny
-    Mat edges = new Mat();
-    Imgproc.Canny(gray, edges, 50, 150);
-
-    // Encuentra los contornos
-    List<MatOfPoint> contours = new ArrayList<>();
-    Mat hierarchy = new Mat();
-    Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-
-    // Dibuja los rectángulos
-    for (MatOfPoint contour : contours) {
-        Rect rect = Imgproc.boundingRect(contour);
-        // Agrega un margen alrededor del rectángulo encontrado
-        int margin = 10;
-        int x = Math.max(rect.x - margin, 0);
-        int y = Math.max(rect.y - margin, 0);
-        int width = Math.min(rect.width + 2 * margin, src.cols() - x);
-        int height = Math.min(rect.height + 2 * margin, src.rows() - y);
-        Rect expandedRect = new Rect(x, y, width, height);
-        // Solo dibuja los rectángulos que son más grandes que un cierto tamaño
-        if (expandedRect.width > 500 && expandedRect.height > 300 && expandedRect.width < 1100 && expandedRect.height < 900) {
-            Imgproc.rectangle(src, expandedRect.tl(), expandedRect.br(), new Scalar(0, 0, 255), 2);
-            // Imprime las coordenadas de las esquinas
-            System.out.println("Esquina superior izquierda: (" + expandedRect.x + ", " + expandedRect.y + ")");
-            System.out.println("Esquina superior derecha: (" + (expandedRect.x + expandedRect.width) + ", " + expandedRect.y + ")");
-            System.out.println("Esquina inferior izquierda: (" + expandedRect.x + ", " + (expandedRect.y + expandedRect.height) + ")");
-            System.out.println("Esquina inferior derecha: (" + (expandedRect.x + expandedRect.width) + ", " + (expandedRect.y + expandedRect.height) + ")");
-        }
+        this.coordenadasSet = new HashSet<>();
     }
+
+    public void EncontrarContornos(String ArchivoVerificar, String ArchivoSalida) {
+        nu.pattern.OpenCV.loadShared();
+        Mat src = Imgcodecs.imread(ArchivoVerificar);
+
+        // Convierte la imagen a escala de grises
+        Mat gray = new Mat();
+        Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
+
+    // Aplica un filtro Gaussiano para suavizar la imagen
+        Imgproc.GaussianBlur(gray, gray, new Size(5, 5), 0);
+
+        // Detecta los bordes usando el algoritmo de Canny
+        Mat edges = new Mat();
+        Imgproc.Canny(gray, edges, 50, 150);
+
+        // Encuentra los contornos
+        List<MatOfPoint> contours = new ArrayList<>();
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+
+        // Dibuja los rectángulos
+        for (MatOfPoint contour : contours) {
+            Rect rect = Imgproc.boundingRect(contour);
+            // Agrega un margen alrededor del rectángulo encontrado
+            int margin = 10;
+            int x = Math.max(rect.x - margin, 0);
+            int y = Math.max(rect.y - margin, 0);
+            int width = Math.min(rect.width + 2 * margin, src.cols() - x);
+            int height = Math.min(rect.height + 2 * margin, src.rows() - y);
+            Rect expandedRect = new Rect(x, y, width, height);
+            // Solo dibuja los rectángulos que son más grandes que un cierto tamaño
+            if (expandedRect.width > 500 && expandedRect.height > 300 && expandedRect.width < 1100 && expandedRect.height < 900) {
+                Imgproc.rectangle(src, expandedRect.tl(), expandedRect.br(), new Scalar(0, 0, 255), 2);
+                // Imprime las coordenadas de las esquinas
+                //System.out.println("Esquina superior izquierda: (" + expandedRect.x + ", " + expandedRect.y + ")");
+                //System.out.println("Esquina superior derecha: (" + (expandedRect.x + expandedRect.width) + ", " + expandedRect.y + ")");
+                //System.out.println("Esquina inferior izquierda: (" + expandedRect.x + ", " + (expandedRect.y + expandedRect.height) + ")");
+                //System.out.println("Esquina inferior derecha: (" + (expandedRect.x + expandedRect.width) + ", " + (expandedRect.y + expandedRect.height) + ")");
+
+                Punto esquinaSupIzq = new Punto(expandedRect.x, expandedRect.y);
+                Punto esquinaSupDer = new Punto((expandedRect.x + expandedRect.width), expandedRect.y );
+                Punto esquinaInfIzq = new Punto(expandedRect.x, (expandedRect.y + expandedRect.height));
+                Punto esquinaInfDer = new Punto((expandedRect.x + expandedRect.width), (expandedRect.y + expandedRect.height));
+
+
+                CoordenadasRojas coordenadas = new CoordenadasRojas(esquinaSupIzq, esquinaSupDer, esquinaInfIzq, esquinaInfDer);
+                coordenadasSet.add(coordenadas); 
+                //System.out.println(coordenadas);
+                //System.out.println("-----------------------------");
+
+
+
+            }
+        }
 
     // Guarda la imagen con los rectángulos dibujados en un archivo de salida
     Imgcodecs.imwrite(ArchivoSalida, src);
@@ -93,10 +116,19 @@ public class ManejoImagenes {
                     new Scalar(0, 255, 0), 2);
             
             // Imprime las coordenadas de las esquinas del rectángulo
-            System.out.println("Esquina superior izquierda: (" + rect.x + ", " + rect.y + ")");
-            System.out.println("Esquina superior derecha: (" + (rect.x + rect.width) + ", " + rect.y + ")");
-            System.out.println("Esquina inferior izquierda: (" + rect.x + ", " + (rect.y + rect.height) + ")");
-            System.out.println("Esquina inferior derecha: (" + (rect.x + rect.width) + ", " + (rect.y + rect.height) + ")");
+            //System.out.println("Esquina superior izquierda: (" + rect.x + ", " + rect.y + ")");
+            //System.out.println("Esquina superior derecha: (" + (rect.x + rect.width) + ", " + rect.y + ")");
+            //System.out.println("Esquina inferior izquierda: (" + rect.x + ", " + (rect.y + rect.height) + ")");
+            //System.out.println("Esquina inferior derecha: (" + (rect.x + rect.width) + ", " + (rect.y + rect.height) + ")");
+            
+             Punto esquinaSupIzq = new Punto(rect.x, rect.y);
+             Punto esquinaSupDer = new Punto((rect.x + rect.width), rect.y );
+             Punto esquinaInfIzq = new Punto(rect.x, (rect.y + rect.height));
+             Punto esquinaInfDer = new Punto((rect.x + rect.width), (rect.y + rect.height));
+
+
+            CoordenadasVerdes coordenadas = new CoordenadasVerdes(esquinaSupIzq, esquinaSupDer, esquinaInfIzq, esquinaInfDer);
+            coordenadasSet.add(coordenadas); 
         }
 
         // Muestra el número de caras detectadas

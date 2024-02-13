@@ -1,6 +1,7 @@
 package main;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import net.sourceforge.tess4j.TesseractException;
 
@@ -36,11 +37,12 @@ public class Main {
             
         }
         */
-        
+       
         jj.EncontrarContornos("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivo.png", "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png");
         //jj.DividirImagenesPorContorno("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png");
         jj.DetectarRostros("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png");
        
+        System.out.println(jj.coordenadasSet);
         
         
         

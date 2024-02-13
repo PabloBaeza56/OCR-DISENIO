@@ -1,22 +1,32 @@
 package main;
 
 import java.util.ArrayList;
-import java.util.List;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
+import java.util.List;
+import org.apache.pdfbox.Loader;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class ManejoImagenes {
-    public void EncontrarContornos(){
-        // Carga la imagen
+
+    public void EncontrarContornos(String ArchivoVerificar) {
         nu.pattern.OpenCV.loadShared();
-        Mat src = Imgcodecs.imread("C:\\Users\\pablo\\OneDrive\\Escritorio\\ArchivoPrueba.png");
+        Mat src = Imgcodecs.imread(ArchivoVerificar);
 
         // Convierte la imagen a escala de grises
         Mat gray = new Mat();
@@ -37,20 +47,80 @@ public class ManejoImagenes {
         // Dibuja los rectángulos
         for (MatOfPoint contour : contours) {
             Rect rect = Imgproc.boundingRect(contour);
+            // Agrega un margen alrededor del rectángulo encontrado
+            int margin = 10;
+            int x = Math.max(rect.x - margin, 0);
+            int y = Math.max(rect.y - margin, 0);
+            int width = Math.min(rect.width + 2 * margin, src.cols() - x);
+            int height = Math.min(rect.height + 2 * margin, src.rows() - y);
+            Rect expandedRect = new Rect(x, y, width, height);
             // Solo dibuja los rectángulos que son más grandes que un cierto tamaño
-            if (rect.width > 400 && rect.height > 300 && rect.width < 800 && rect.height < 600) {
-                Imgproc.rectangle(src, rect.tl(), rect.br(), new Scalar(0, 0, 255), 2);
+            if (expandedRect.width > 600 && expandedRect.height > 400 && expandedRect.width < 1000 && expandedRect.height < 800) {
+                Imgproc.rectangle(src, expandedRect.tl(), expandedRect.br(), new Scalar(0, 0, 255), 2);
             }
         }
 
         // Guarda la imagen con los rectángulos dibujados
-        Imgcodecs.imwrite("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDA2.png", src);
+        Imgcodecs.imwrite(ArchivoVerificar, src);
     }
-    
-    public void DividirImagenesPorContorno(){
-        // Carga la imagen
+
+    public void DetectarRostros(String cadenaRuta) {
         nu.pattern.OpenCV.loadShared();
-        Mat src = Imgcodecs.imread("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDA.png");
+
+        // Lee la imagen
+        Mat image = Imgcodecs.imread(cadenaRuta);
+
+        // Carga el clasificador de detección de caras
+        CascadeClassifier faceDetector = new CascadeClassifier();
+        faceDetector.load("C:\\Users\\pablo\\OneDrive\\Documentos\\NetBeansProjects\\OCR-DISENIO\\src\\main\\java\\main\\haarcascade_frontalface_default.xml");
+
+        // Convierte la imagen a escala de grises
+        Mat grayImage = new Mat();
+        Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.equalizeHist(grayImage, grayImage);
+
+        // Detecta caras en la imagen
+        MatOfRect faceDetections = new MatOfRect();
+        faceDetector.detectMultiScale(grayImage, faceDetections, 1.1, 5, 0, new Size(30, 30));
+
+        // Dibuja un rectángulo alrededor de cada cara detectada
+        for (Rect rect : faceDetections.toArray()) {
+            Imgproc.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+                    new Scalar(0, 255, 0), 2);
+        }
+
+        // Muestra el número de caras detectadas
+        System.out.println("Número de caras detectadas: " + faceDetections.toArray().length);
+
+        // Guarda la imagen con los rectángulos dibujados
+        Imgcodecs.imwrite(cadenaRuta, image);
+    }
+
+    
+    public int PDFtoPNGConverter(String pdfFilePath, String outputDir) throws IOException {
+        int ContadorPaginasGeneradas = 0;
+        try (PDDocument document = Loader.loadPDF(new File(pdfFilePath))) {
+            PDFRenderer renderer = new PDFRenderer(document);
+            for (int pageIndex = 0; pageIndex < document.getNumberOfPages(); pageIndex++) {
+                BufferedImage image = renderer.renderImageWithDPI(pageIndex, 300);
+
+                String outputFileName = outputDir + "\\page_" + (pageIndex + 1) + ".png";
+                File outputFile = new File(outputFileName);
+                ImageIO.write(image, "png", outputFile);
+                ContadorPaginasGeneradas++;
+            }
+
+            System.out.println("¡Conversión de PDF a PNG completada!");
+
+        } catch (IOException e) {}
+        return ContadorPaginasGeneradas;
+    }
+
+    public void DividirImagenesPorContorno(String cadenaRuta) {
+        // Carga la imagen
+        
+        nu.pattern.OpenCV.loadShared();
+        Mat src = Imgcodecs.imread(cadenaRuta);
 
         // Convierte la imagen a escala de grises
         Mat gray = new Mat();
@@ -74,7 +144,7 @@ public class ManejoImagenes {
         for (MatOfPoint contour : contours) {
             Rect rect = Imgproc.boundingRect(contour);
             // Solo recorta los rectángulos que son más grandes que un cierto tamaño
-            if (rect.width > 200 && rect.height > 150 && rect.width < 2000 && rect.height < 1750) {
+            if (rect.width > 600 && rect.height > 400 && rect.width < 1000 && rect.height < 800) {
                 Mat cropped = new Mat(src, rect);
                 boolean isDuplicate = false;
                 for (Mat img : croppedImages) {
@@ -90,12 +160,11 @@ public class ManejoImagenes {
                 }
                 if (!isDuplicate) {
                     croppedImages.add(cropped);
-                    Imgcodecs.imwrite("C:\\Users\\pablo\\OneDrive\\Escritorio\\" + i + ".jpg", cropped);
+                    Imgcodecs.imwrite(cadenaRuta + "XXXX" + i + ".jpg", cropped);
                     i++;
                 }
             }
         }
     }
-    
-    
+
 }

@@ -59,7 +59,7 @@ public class ManejoCadenas {
         }
         this.arr.remove(datosVitales.get(0));
         this.arr.remove(datosVitales.get(1));
-        datosVitales = null;
+      
     }
     
     public void EliminarElementosBasura(){

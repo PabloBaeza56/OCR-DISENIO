@@ -29,12 +29,7 @@
             <artifactId>opencv</artifactId>
             <version>4.9.0-0</version>
         </dependency>
-        <dependency>
-            <groupId>com.azure</groupId>
-            <artifactId>azure-ai-formrecognizer</artifactId>
-            <version>4.1.4</version>
-            <type>jar</type>
-        </dependency>
+        
     </dependencies>
 
 

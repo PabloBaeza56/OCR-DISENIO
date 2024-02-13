@@ -28,7 +28,7 @@ import java.util.Set;
 
 public class ManejoImagenes {
 
-    Set<Coordenadas> coordenadasSet;
+    Set<CoordenadasRojas> coordenadasSet;
     
     public ManejoImagenes(){
 
@@ -79,12 +79,23 @@ public class ManejoImagenes {
                 Punto esquinaInfIzq = new Punto(expandedRect.x, (expandedRect.y + expandedRect.height));
                 Punto esquinaInfDer = new Punto((expandedRect.x + expandedRect.width), (expandedRect.y + expandedRect.height));
 
-
                 CoordenadasRojas coordenadas = new CoordenadasRojas(esquinaSupIzq, esquinaSupDer, esquinaInfIzq, esquinaInfDer);
-                coordenadasSet.add(coordenadas); 
-                //System.out.println(coordenadas);
-                //System.out.println("-----------------------------");
 
+                // Verifica si ya existe una coordenada similar en el conjunto
+                boolean existe = false;
+                for (CoordenadasRojas c : coordenadasSet) {
+                    if (c.equals(coordenadas)) {
+                        existe = true;
+                        break;
+                    }
+                }
+
+            // Si no existe una coordenada similar, agrégala al conjunto
+            if (!existe) {
+                coordenadasSet.add(coordenadas);
+            
+            }
+            
 
 
             }
@@ -94,8 +105,9 @@ public class ManejoImagenes {
     Imgcodecs.imwrite(ArchivoSalida, src);
 }
 
-    public void detectarRostros(String cadenaRuta) {
+    public int detectarRostros(String cadenaRuta) {
     nu.pattern.OpenCV.loadShared();
+    int ContadorRostrosDetectados = 0;
 
     // Lee la imagen
     Mat image = Imgcodecs.imread(cadenaRuta);
@@ -111,7 +123,8 @@ public class ManejoImagenes {
 
     // Detecta caras en la imagen
    MatOfRect faceDetections = new MatOfRect();
-    faceDetector.detectMultiScale(grayImage, faceDetections, 1.1, 3, 0, new Size(50, 50), new Size(image.width(), image.height()));
+   //faceDetector.detectMultiScale(grayImage, faceDetections, 1.1, 3, 0, new Size(50, 50), new Size(image.width(), image.height()));
+    faceDetector.detectMultiScale(grayImage, faceDetections, 1.1, 3, 0, new Size(75, 75), new Size(image.width(), image.height()));
     // Dibuja un rectángulo alrededor de cada cara detectada
     for (Rect rect : faceDetections.toArray()) {
         Imgproc.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
@@ -123,13 +136,14 @@ public class ManejoImagenes {
         //System.out.println("Esquina inferior izquierda: (" + rect.x + ", " + (rect.y + rect.height) + ")");
         //System.out.println("Esquina inferior derecha: (" + (rect.x + rect.width) + ", " + (rect.y + rect.height) + ")");
 
-        Punto esquinaSupIzq = new Punto(rect.x, rect.y);
-        Punto esquinaSupDer = new Punto((rect.x + rect.width), rect.y );
-        Punto esquinaInfIzq = new Punto(rect.x, (rect.y + rect.height));
-        Punto esquinaInfDer = new Punto((rect.x + rect.width), (rect.y + rect.height));
+        //Punto esquinaSupIzq = new Punto(rect.x, rect.y);
+        //Punto esquinaSupDer = new Punto((rect.x + rect.width), rect.y );
+        //Punto esquinaInfIzq = new Punto(rect.x, (rect.y + rect.height));
+        //Punto esquinaInfDer = new Punto((rect.x + rect.width), (rect.y + rect.height));
 
-        CoordenadasVerdes coordenadas = new CoordenadasVerdes(esquinaSupIzq, esquinaSupDer, esquinaInfIzq, esquinaInfDer);
-        coordenadasSet.add(coordenadas); 
+        //CoordenadasVerdes coordenadas = new CoordenadasVerdes(esquinaSupIzq, esquinaSupDer, esquinaInfIzq, esquinaInfDer);
+        //coordenadasSet.add(coordenadas); 
+        ContadorRostrosDetectados++;
     }
 
     // Muestra el número de caras detectadas
@@ -137,6 +151,7 @@ public class ManejoImagenes {
 
     // Guarda la imagen con los rectángulos dibujados
     Imgcodecs.imwrite(cadenaRuta, image);
+    return ContadorRostrosDetectados;
 }
 
     
@@ -213,34 +228,44 @@ public class ManejoImagenes {
     
     
     
-    public CoordenadasRojas VerificarContencion(){
-  
-        CoordenadasVerdes rectanguloVerde = null;
-        
-        List<CoordenadasRojas> rectangulosRojosContenedores = new ArrayList<>();
+    public CoordenadasRojas VerificarContencion() {
+    List<CoordenadasRojas> rectangulosRojosContenedores = new ArrayList<>();
 
-        for (Coordenadas c : this.coordenadasSet) {
-            if (c instanceof CoordenadasRojas) {
-                CoordenadasRojas rojo = (CoordenadasRojas) c;
-                if (estaContenido(rojo, rectanguloVerde)) {
-                    rectangulosRojosContenedores.add(rojo);
+    // Recorrer todos los rectángulos rojos
+    for (Coordenadas c : this.coordenadasSet) {
+        if (c instanceof CoordenadasRojas) {
+            CoordenadasRojas rojo = (CoordenadasRojas) c;
+            boolean contenido = false;
+
+            // Verificar si el rectángulo rojo contiene algún rectángulo verde
+            for (Coordenadas c2 : this.coordenadasSet) {
+                if (c2 instanceof CoordenadasVerdes) {
+                    CoordenadasVerdes verde = (CoordenadasVerdes) c2;
+                    if (estaContenido(rojo, verde)) {
+                        contenido = true;
+                        break;
+                    }
                 }
-            } else if (c instanceof CoordenadasVerdes) {
-                rectanguloVerde = (CoordenadasVerdes) c;
+            }
+
+            // Si el rectángulo rojo contiene algún rectángulo verde, se agrega a la lista de rectángulos contenedores
+            if (contenido) {
+                rectangulosRojosContenedores.add(rojo);
             }
         }
-        
-        CoordenadasRojas salida = new CoordenadasRojas();
-        if (!rectangulosRojosContenedores.isEmpty()) {
-            System.out.println("El rectángulo verde está contenido en los siguientes rectángulos rojos:");
-            for (CoordenadasRojas rojo : rectangulosRojosContenedores) {
-                salida.setCoordenadas(rojo);
-            }
-        } else {
-            System.out.println("El rectángulo verde no está contenido en ninguno de los rectángulos rojos.");
-        }
-        return salida;
     }
+
+    CoordenadasRojas salida = new CoordenadasRojas();
+    if (!rectangulosRojosContenedores.isEmpty()) {
+        System.out.println("Los siguientes rectángulos rojos contienen rectángulos verdes:");
+        for (CoordenadasRojas rojo : rectangulosRojosContenedores) {
+            salida.setCoordenadas(rojo);
+        }
+    } else {
+        System.out.println("Ningún rectángulo rojo contiene rectángulos verdes.");
+    }
+    return salida;
+}
     
     private static boolean estaContenido(CoordenadasRojas rojo, CoordenadasVerdes verde) {
         if (verde == null) {
@@ -258,43 +283,44 @@ public class ManejoImagenes {
         return vx1 >= x1 && vy1 >= y1 && vx2 <= x2 && vy2 <= y2;
     }
     
-    public void RecortarImagen(String inputImagePath){
-    
-        String outputImagePath = "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\salida.png";
+    public void RecortarImagen(String inputImagePath, CoordenadasRojas coordenadas) {
+    // Ruta de salida para la imagen recortada
+    String outputImagePath = "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\salida.png";
 
-    
-        double topLeftX = 891.0;
-        double topLeftY = 604.0;
-        double bottomRightX = 2263.0;
-        double bottomRightY = 1481.0;
+    // Coordenadas de la esquina superior izquierda y esquina inferior derecha
+    double topLeftX = coordenadas.getEsquinaSuperiorIzquierda().getX();
+    double topLeftY = coordenadas.getEsquinaSuperiorIzquierda().getY();
+    double bottomRightX = coordenadas.getEsquinaInferiorDerecha().getX();
+    double bottomRightY = coordenadas.getEsquinaInferiorDerecha().getY();
 
-        try {
-            BufferedImage inputImage = ImageIO.read(new File(inputImagePath));
+    try {
+        // Lee la imagen de entrada
+        BufferedImage inputImage = ImageIO.read(new File(inputImagePath));
 
-            // Calcula las coordenadas y dimensiones del rectángulo de recorte
-            int x = (int) topLeftX;
-            int y = (int) topLeftY;
-            int width = (int) (bottomRightX - topLeftX);
-            int height = (int) (bottomRightY - topLeftY);
+        // Calcula las coordenadas y dimensiones del rectángulo de recorte
+        int x = (int) topLeftX;
+        int y = (int) topLeftY;
+        int width = (int) (bottomRightX - topLeftX);
+        int height = (int) (bottomRightY - topLeftY);
 
-            // Crea una instancia de ImagePlus desde la imagen de entrada
-            ImagePlus imagePlus = new ImagePlus("", inputImage);
+        // Crea una instancia de ImagePlus desde la imagen de entrada
+        ImagePlus imagePlus = new ImagePlus("", inputImage);
 
-            // Obtiene el procesador de la imagen
-            ImageProcessor imageProcessor = imagePlus.getProcessor();
+        // Obtiene el procesador de la imagen
+        ImageProcessor imageProcessor = imagePlus.getProcessor();
 
-            // Realiza el recorte
-            imageProcessor.setRoi(x, y, width, height);
-            ImageProcessor croppedImageProcessor = imageProcessor.crop();
-            BufferedImage croppedImage = croppedImageProcessor.getBufferedImage();
+        // Realiza el recorte
+        imageProcessor.setRoi(x, y, width, height);
+        ImageProcessor croppedImageProcessor = imageProcessor.crop();
+        BufferedImage croppedImage = croppedImageProcessor.getBufferedImage();
 
-            // Guarda la imagen recortada
-            File outputImageFile = new File(outputImagePath);
-            ImageIO.write(croppedImage, "png", outputImageFile);
+        // Guarda la imagen recortada
+        File outputImageFile = new File(outputImagePath);
+        ImageIO.write(croppedImage, "png", outputImageFile);
 
-            System.out.println("Imagen recortada guardada en: " + outputImagePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        System.out.println("Imagen recortada guardada en: " + outputImagePath);
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+}
 }

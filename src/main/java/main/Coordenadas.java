@@ -62,23 +62,25 @@ public class Coordenadas {
     private static final DecimalFormat df = new DecimalFormat("#.##");
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-        Coordenadas other = (Coordenadas) obj;
-        return df.format(esquinaSuperiorIzquierda.getX()).equals(df.format(other.esquinaSuperiorIzquierda.getX())) &&
-               df.format(esquinaSuperiorIzquierda.getY()).equals(df.format(other.esquinaSuperiorIzquierda.getY())) &&
-               df.format(esquinaSuperiorDerecha.getX()).equals(df.format(other.esquinaSuperiorDerecha.getX())) &&
-               df.format(esquinaSuperiorDerecha.getY()).equals(df.format(other.esquinaSuperiorDerecha.getY())) &&
-               df.format(esquinaInferiorIzquierda.getX()).equals(df.format(other.esquinaInferiorIzquierda.getX())) &&
-               df.format(esquinaInferiorIzquierda.getY()).equals(df.format(other.esquinaInferiorIzquierda.getY())) &&
-               df.format(esquinaInferiorDerecha.getX()).equals(df.format(other.esquinaInferiorDerecha.getX())) &&
-               df.format(esquinaInferiorDerecha.getY()).equals(df.format(other.esquinaInferiorDerecha.getY()));
+   public boolean equals(Object obj) {
+    if (this == obj) {
+        return true;
     }
+    if (obj == null || getClass() != obj.getClass()) {
+        return false;
+    }
+    Coordenadas other = (Coordenadas) obj;
+    double tolerance = 3.0; // Tolerancia de +-3
+
+    return Math.abs(esquinaSuperiorIzquierda.getX() - other.esquinaSuperiorIzquierda.getX()) <= tolerance &&
+           Math.abs(esquinaSuperiorIzquierda.getY() - other.esquinaSuperiorIzquierda.getY()) <= tolerance &&
+           Math.abs(esquinaSuperiorDerecha.getX() - other.esquinaSuperiorDerecha.getX()) <= tolerance &&
+           Math.abs(esquinaSuperiorDerecha.getY() - other.esquinaSuperiorDerecha.getY()) <= tolerance &&
+           Math.abs(esquinaInferiorIzquierda.getX() - other.esquinaInferiorIzquierda.getX()) <= tolerance &&
+           Math.abs(esquinaInferiorIzquierda.getY() - other.esquinaInferiorIzquierda.getY()) <= tolerance &&
+           Math.abs(esquinaInferiorDerecha.getX() - other.esquinaInferiorDerecha.getX()) <= tolerance &&
+           Math.abs(esquinaInferiorDerecha.getY() - other.esquinaInferiorDerecha.getY()) <= tolerance;
+}
 
     @Override
     public int hashCode() {

@@ -1,6 +1,8 @@
 package main;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Coordenadas {
     private Punto esquinaSuperiorIzquierda;
@@ -90,4 +92,7 @@ public class Coordenadas {
         result = 31 * result + df.format(esquinaInferiorDerecha.getY()).hashCode();
         return result;
     }
+    
+    
+    
 }

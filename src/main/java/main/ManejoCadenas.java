@@ -29,6 +29,21 @@ public class ManejoCadenas {
         return cadenaLimpia;
     }
     
+    public void VerificarINE() throws ExcepcionesPropias{
+        Boolean esIne = false;
+        Iterator<String> iterator2 = this.arr.iterator();
+        while (iterator2.hasNext()) {
+            String elemento = iterator2.next();
+           
+            if (elemento.contains("INSTITUTO") || elemento.contains("VOTAR") || elemento.contains("ELECTORAL") || elemento.contains("CREDENCIAL") || elemento.contains("CLAVE") || elemento.contains("NACIONAL")) {
+                esIne = true;
+            }     
+        }
+        if (!esIne){
+            throw new ExcepcionesPropias("NO es una INE");
+        }
+    }
+    
     public void GuardarSubcadenasConMasDeUnDigito(String nuevaCadena){
         String[] lineas = dividirPorSaltosDeLinea(nuevaCadena);
         for (String linea : lineas) {
@@ -46,7 +61,11 @@ public class ManejoCadenas {
         }
     }
     
-    public void EncontrarClaveElector(){
+    public void EncontrarClaveElector() throws ExcepcionesPropias{
+        if (datosVitales.size() != 2){
+            throw new ExcepcionesPropias("La obtencion de datos Vitales es ambigua");
+        }
+        
         if (datosVitales.get(0).matches("[a-zA-Z]{6}.*")){
             this.elector = new ClaveDeElector(RepararClaveElector(datosVitales.get(0)));
             ciudadano.setCurp(RepararCURP(datosVitales.get(1)));

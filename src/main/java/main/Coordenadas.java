@@ -3,6 +3,7 @@ package main;
 import java.text.DecimalFormat;
 
 public class Coordenadas {
+    private static final DecimalFormat df = new DecimalFormat("#.##");
     private Punto esquinaSuperiorIzquierda;
     private Punto esquinaSuperiorDerecha;
     private Punto esquinaInferiorIzquierda;
@@ -56,9 +57,6 @@ public class Coordenadas {
                "\nEsquina inferior derecha: " + esquinaInferiorDerecha;
     }
     
-
-    private static final DecimalFormat df = new DecimalFormat("#.##");
-
     @Override
    public boolean equals(Object obj) {
     if (this == obj) {

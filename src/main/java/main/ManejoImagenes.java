@@ -95,6 +95,7 @@ public class ManejoImagenes {
         Mat image = Imgcodecs.imread(cadenaRuta);
 
         CascadeClassifier faceDetector = new CascadeClassifier();
+        //El archivo se encuentra en el paquete actual, adecue su path segun su computadora
         faceDetector.load("C:\\Users\\pablo\\OneDrive\\Documentos\\NetBeansProjects\\OCR-DISENIO\\src\\main\\java\\main\\haarcascade_frontalface_default.xml");
 
         Mat grayImage = new Mat();
@@ -110,7 +111,6 @@ public class ManejoImagenes {
             ContadorRostrosDetectados++;
         }
 
-        System.out.println("Número de caras detectadas: " + faceDetections.toArray().length);
         if (faceDetections.toArray().length < 2){
             throw new ExcepcionesPropias("No se encontraron suficientes caras");
         }

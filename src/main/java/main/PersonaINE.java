@@ -10,6 +10,7 @@ public class PersonaINE {
     private String curp;
     private String fechaNacimiento;
     private String numeroEntidadFederativa;
+    private char sexo;
 
     public String getNumeroEntidadFederativa() {
         return numeroEntidadFederativa;
@@ -18,8 +19,7 @@ public class PersonaINE {
     public void setNumeroEntidadFederativa(String numeroEntidadFederativa) {
         this.numeroEntidadFederativa = numeroEntidadFederativa;
     }
-    private char sexo;
-
+    
     public String getPrimerApellido() {
         return primerApellido;
     }
@@ -87,8 +87,9 @@ public class PersonaINE {
     // Método toString para imprimir información de la persona
     @Override
     public String toString() {
-    return "Persona{\n"
-            + "primerApellido='" + primerApellido + "'\n"
+    return """
+           Persona{
+           primerApellido='""" + primerApellido + "'\n"
             + " segundoApellido='" + segundoApellido + "'\n"
             + " nombre='" + nombre + "'\n"
             + " domicilio='" + domicilio + "'\n"

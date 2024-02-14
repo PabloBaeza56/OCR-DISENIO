@@ -1,8 +1,6 @@
 package main;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Coordenadas {
     private Punto esquinaSuperiorIzquierda;
@@ -58,7 +56,7 @@ public class Coordenadas {
                "\nEsquina inferior derecha: " + esquinaInferiorDerecha;
     }
     
-    // Formateador para redondear las coordenadas a dos decimales
+
     private static final DecimalFormat df = new DecimalFormat("#.##");
 
     @Override

@@ -25,7 +25,6 @@ public class Punto {
         this.y = y;
     }
 
-    // Método para imprimir las coordenadas
     @Override
     public String toString() {
         return "(" + x + ", " + y + ")";

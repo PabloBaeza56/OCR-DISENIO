@@ -11,13 +11,15 @@ public class Main {
         
        
         ManejoImagenes jj = new ManejoImagenes();
+        String pathImagenOriginal = "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivo.png";
+        String pathSalidaDivisionContornos = "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png";
        
        
-        jj.EncontrarContornos("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivo.png", "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png");
-        jj.DividirImagenesPorContorno("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png");
-        jj.detectarRostros("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.pngXXXX0.png");
+        jj.EncontrarContornos(pathImagenOriginal, pathSalidaDivisionContornos);
+        jj.DividirImagenesPorContorno(pathSalidaDivisionContornos);
+        jj.detectarRostros(pathSalidaDivisionContornos +"XXXX0.png");
         List<CoordenadasRojas> listaCoordenadas = new ArrayList<>(jj.coordenadasSet);
-        jj.RecortarImagen("C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivo.png",listaCoordenadas.get(0));
+        jj.RecortarImagen(pathImagenOriginal,listaCoordenadas.get(0), "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\salida.png");
         
         
         OCR conti = new OCR();

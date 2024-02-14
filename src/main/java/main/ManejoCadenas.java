@@ -20,8 +20,7 @@ public class ManejoCadenas {
         this.arr = new LinkedList();
         this.datosVitales = new ArrayList();
         this.cadenaOriginal = cadenaOriginal;
-        this.ciudadano = ciudadano;
-        
+        this.ciudadano = ciudadano; 
     }
     
     public String LimpiarCadenaValoresBasura(){
@@ -59,7 +58,6 @@ public class ManejoCadenas {
         }
         this.arr.remove(datosVitales.get(0));
         this.arr.remove(datosVitales.get(1));
-      
     }
     
     public void EliminarElementosBasura(){
@@ -155,7 +153,6 @@ public class ManejoCadenas {
         } else {
             ciudadano.setDomicilio("ERROR");
         }
-  
     }
     
     public LinkedList<String> DevolverElementosNoIdentificados(){
@@ -167,7 +164,6 @@ public class ManejoCadenas {
     }
     
     public static boolean verificarCuatroNumeros(String subcadena) {
-
         String regex = ".*\\b\\d{4}\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(subcadena);
@@ -178,8 +174,8 @@ public class ManejoCadenas {
 
         char[] caracteres = cadena.toCharArray();
         for (int i = 4; i <= 8 && i < caracteres.length; i++) {
-            if (caracteres[i] == 'O') { // Si el caracter es 'O'
-                caracteres[i] = '0'; // Intercambiar por '0'
+            if (caracteres[i] == 'O') { 
+                caracteres[i] = '0'; 
             }
         }
         String nuevaCadena = String.valueOf(caracteres);

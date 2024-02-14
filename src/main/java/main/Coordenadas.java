@@ -66,16 +66,16 @@ public class Coordenadas {
         return false;
     }
     Coordenadas other = (Coordenadas) obj;
-    double tolerance = 3.0; // Tolerancia de +-3
+    double tolerancia = 3.0; 
 
-    return Math.abs(esquinaSuperiorIzquierda.getX() - other.esquinaSuperiorIzquierda.getX()) <= tolerance &&
-           Math.abs(esquinaSuperiorIzquierda.getY() - other.esquinaSuperiorIzquierda.getY()) <= tolerance &&
-           Math.abs(esquinaSuperiorDerecha.getX() - other.esquinaSuperiorDerecha.getX()) <= tolerance &&
-           Math.abs(esquinaSuperiorDerecha.getY() - other.esquinaSuperiorDerecha.getY()) <= tolerance &&
-           Math.abs(esquinaInferiorIzquierda.getX() - other.esquinaInferiorIzquierda.getX()) <= tolerance &&
-           Math.abs(esquinaInferiorIzquierda.getY() - other.esquinaInferiorIzquierda.getY()) <= tolerance &&
-           Math.abs(esquinaInferiorDerecha.getX() - other.esquinaInferiorDerecha.getX()) <= tolerance &&
-           Math.abs(esquinaInferiorDerecha.getY() - other.esquinaInferiorDerecha.getY()) <= tolerance;
+    return Math.abs(esquinaSuperiorIzquierda.getX() - other.esquinaSuperiorIzquierda.getX()) <= tolerancia &&
+           Math.abs(esquinaSuperiorIzquierda.getY() - other.esquinaSuperiorIzquierda.getY()) <= tolerancia &&
+           Math.abs(esquinaSuperiorDerecha.getX() - other.esquinaSuperiorDerecha.getX()) <= tolerancia &&
+           Math.abs(esquinaSuperiorDerecha.getY() - other.esquinaSuperiorDerecha.getY()) <= tolerancia &&
+           Math.abs(esquinaInferiorIzquierda.getX() - other.esquinaInferiorIzquierda.getX()) <= tolerancia &&
+           Math.abs(esquinaInferiorIzquierda.getY() - other.esquinaInferiorIzquierda.getY()) <= tolerancia &&
+           Math.abs(esquinaInferiorDerecha.getX() - other.esquinaInferiorDerecha.getX()) <= tolerancia &&
+           Math.abs(esquinaInferiorDerecha.getY() - other.esquinaInferiorDerecha.getY()) <= tolerancia;
 }
 
     @Override

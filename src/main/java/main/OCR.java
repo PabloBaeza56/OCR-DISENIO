@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 
 public class OCR {
     private Tesseract tesseract;
+    
     //El archivo se encuentra en el paquete actual, adecue su path segun su computadora
     private String tessdataPath = "C:\\Users\\pablo\\OneDrive\\Documentos\\NetBeansProjects\\OCR-DISENIO\\src\\main\\java\\main";
     

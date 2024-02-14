@@ -4,8 +4,6 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import java.util.ArrayList;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfFloat;
-import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfRect;
 import org.opencv.core.Point;
@@ -62,7 +60,7 @@ public class ManejoImagenes {
             
             Rect expandedRect = new Rect(x, y, width, height);
 
-            if (expandedRect.width > 500 && expandedRect.height > 500 && expandedRect.width < 1500 && expandedRect.height < 1500) {
+            if (expandedRect.width > 350 && expandedRect.height > 350 && expandedRect.width < 3000 && expandedRect.height < 3000) {
                 Imgproc.rectangle(src, expandedRect.tl(), expandedRect.br(), new Scalar(0, 0, 255), 2);
 
                 Punto esquinaSupIzq = new Punto(expandedRect.x, expandedRect.y);
@@ -95,6 +93,7 @@ public class ManejoImagenes {
         Mat image = Imgcodecs.imread(cadenaRuta);
 
         CascadeClassifier faceDetector = new CascadeClassifier();
+        
         //El archivo se encuentra en el paquete actual, adecue su path segun su computadora
         faceDetector.load("C:\\Users\\pablo\\OneDrive\\Documentos\\NetBeansProjects\\OCR-DISENIO\\src\\main\\java\\main\\haarcascade_frontalface_default.xml");
 
@@ -105,6 +104,7 @@ public class ManejoImagenes {
         MatOfRect faceDetections = new MatOfRect();
        
         faceDetector.detectMultiScale(grayImage, faceDetections, 1.1, 3, 0, new Size(75, 75), new Size(image.width(), image.height()));
+        
         // Dibuja un rectángulo alrededor de cada cara detectada
         for (Rect rect : faceDetections.toArray()) {
             Imgproc.rectangle(image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),new Scalar(0, 255, 0), 2);
@@ -139,50 +139,32 @@ public class ManejoImagenes {
         return ContadorPaginasGeneradas;
     }
 
+    
     public void DividirImagenesPorContorno(String cadenaRuta) {
+
         nu.pattern.OpenCV.loadShared();
         Mat src = Imgcodecs.imread(cadenaRuta);
 
-        Mat gray = new Mat();
-        Imgproc.cvtColor(src, gray, Imgproc.COLOR_BGR2GRAY);
-
-        Imgproc.GaussianBlur(gray, gray, new Size(5, 5), 0);
-
-        Mat edges = new Mat();
-        Imgproc.Canny(gray, edges, 50, 150);
-
-        List<MatOfPoint> contours = new ArrayList<>();
-        Mat hierarchy = new Mat();
-        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-
-        List<Mat> croppedImages = new ArrayList<>();
         int i = 0;
-        for (MatOfPoint contour : contours) {
-            Rect rect = Imgproc.boundingRect(contour);
+        for (CoordenadasRojas coordenadas : this.coordenadasSet) {
             
-            if (rect.width > 500 && rect.height > 500 && rect.width < 2000 && rect.height < 2000) {
-                Mat cropped = new Mat(src, rect);
-                boolean isDuplicate = false;
-                for (Mat img : croppedImages) {
-                    Mat hist1 = new Mat();
-                    Mat hist2 = new Mat();
-                    Imgproc.calcHist(java.util.Arrays.asList(cropped), new MatOfInt(0), new Mat(), hist1, new MatOfInt(256), new MatOfFloat(0, 256));
-                    Imgproc.calcHist(java.util.Arrays.asList(img), new MatOfInt(0), new Mat(), hist2, new MatOfInt(256), new MatOfFloat(0, 256));
-                    double res = Imgproc.compareHist(hist1, hist2, Imgproc.CV_COMP_CORREL);
-                    if (res > 0.9) {
-                        isDuplicate = true;
-                        break;
-                    }
-                }
-                if (!isDuplicate) {
-                    croppedImages.add(cropped);
-                    Imgcodecs.imwrite(cadenaRuta + "XXXX" + i + ".png", cropped);
-                    i++;
-                }
-            }
+            Punto esquinaSupIzq = coordenadas.getEsquinaSuperiorIzquierda();
+            Punto esquinaInfDer = coordenadas.getEsquinaInferiorDerecha();
+
+            Rect rect = new Rect((int) esquinaSupIzq.getX(), (int) esquinaSupIzq.getY(),
+                                 (int) (esquinaInfDer.getX() - esquinaSupIzq.getX()),
+                                 (int) (esquinaInfDer.getY() - esquinaSupIzq.getY()));
+
+            Mat cropped = new Mat(src, rect);
+
+            String outputImagePath = cadenaRuta.substring(0, cadenaRuta.lastIndexOf('.')) + "_recortada_" + i + ".png";
+            Imgcodecs.imwrite(outputImagePath, cropped);
+
+            i++;
         }
     }
-
+    
+    
     public void RecortarImagen(String inputImagePath, CoordenadasRojas coordenadas, String outputImagePath) {
 
         double topLeftX = coordenadas.getEsquinaSuperiorIzquierda().getX();

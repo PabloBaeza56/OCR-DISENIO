@@ -10,8 +10,10 @@ public class Main {
         //El paquete se debe llamar analizarINE
         //Las imagenes de ejemplo se encuentran en la carpeta actual
         //Modifique las paths segun la ubicacion de la imagen en su equipo de computo
+        //Modifique las paths del detector de caras y ocr (El archi se encuentra en la carpeta)
         
        //Primer Proceso
+       //Usar imagen primer proceso
         ManejoImagenes jj = new ManejoImagenes();
         String pathImagenOriginal = "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivo.png";
         String pathSalidaDivisionContornos = "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\definitivoSALIDA.png";
@@ -19,18 +21,25 @@ public class Main {
        
         jj.EncontrarContornos(pathImagenOriginal, pathSalidaDivisionContornos);
         jj.DividirImagenesPorContorno(pathSalidaDivisionContornos);
-        jj.detectarRostros(pathSalidaDivisionContornos +"XXXX0.png");
-        List<CoordenadasRojas> listaCoordenadas = new ArrayList<>(jj.coordenadasSet);
-        jj.RecortarImagen(pathImagenOriginal,listaCoordenadas.get(0), "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\salida.png");
         
+        List<CoordenadasRojas> listaCoordenadas = new ArrayList<>(jj.coordenadasSet);
+        
+        for (int i = 0; i < listaCoordenadas.size(); i++){
+            try{
+            jj.detectarRostros(pathSalidaDivisionContornos.substring(0, pathSalidaDivisionContornos.length() - 4)+ "_recortada_" + i + ".png");
+            jj.RecortarImagen(pathImagenOriginal,listaCoordenadas.get(i), "C:\\Users\\pablo\\OneDrive\\Escritorio\\SALIDAPNG\\salida.png");
+            } catch (ExcepcionesPropias e){}
+        }
         
         /*
         Debido a cuestiones de calidad de imagen, la imagen recortada en el proceso
         de arriba, no la detecta adecuadamnete el proceso de abajo, por lo tanto se utilizara otra imagen
-        que funciona adecuadamente, la reduccion de la calidad se debe a las librerias usadas pertenecientes a apache
+        que funciona adecuadamente, la reduccion de la calidad se debe al proceso de poner las 2 caras de la INE
+        en el documento.
         */
         
         //Segundo Proceso
+        //Usar imagen segundo proceso
         OCR conti = new OCR();
         String salida = (conti.MetodoAlternativo("C:\\Users\\pablo\\OneDrive\\Escritorio\\img20240209_18444422.png")); 
         PersonaINE ciudadano = new PersonaINE();

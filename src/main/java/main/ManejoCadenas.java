@@ -10,14 +10,14 @@ import java.util.regex.Pattern;
 
 
 public class ManejoCadenas {
-    LinkedList<String> arr;
+    LinkedList<String> arregloElementosOCR;
     ArrayList<String> datosVitales;
     ClaveDeElector elector;
     String cadenaOriginal;
     PersonaINE ciudadano;
     
     public ManejoCadenas(String cadenaOriginal, PersonaINE ciudadano){
-        this.arr = new LinkedList();
+        this.arregloElementosOCR = new LinkedList();
         this.datosVitales = new ArrayList();
         this.cadenaOriginal = cadenaOriginal;
         this.ciudadano = ciudadano; 
@@ -31,7 +31,7 @@ public class ManejoCadenas {
     
     public void VerificarINE() throws ExcepcionesPropias{
         Boolean esIne = false;
-        Iterator<String> iterator2 = this.arr.iterator();
+        Iterator<String> iterator2 = this.arregloElementosOCR.iterator();
         while (iterator2.hasNext()) {
             String elemento = iterator2.next();
            
@@ -48,13 +48,13 @@ public class ManejoCadenas {
         String[] lineas = dividirPorSaltosDeLinea(nuevaCadena);
         for (String linea : lineas) {
             if (linea.length() > 1){
-                this.arr.add(linea);
+                this.arregloElementosOCR.add(linea);
             }
         }
     }
     
     public void BuscarCURPyClaveElector(){
-        for (String elemento : this.arr){
+        for (String elemento : this.arregloElementosOCR){
             if (elemento.length() == 18){
                 datosVitales.add(elemento);
             }
@@ -75,12 +75,12 @@ public class ManejoCadenas {
             ciudadano.setCurp(RepararCURP(datosVitales.get(0)));
             ciudadano.setClaveElector(RepararClaveElector(datosVitales.get(1)));
         }
-        this.arr.remove(datosVitales.get(0));
-        this.arr.remove(datosVitales.get(1));
+        this.arregloElementosOCR.remove(datosVitales.get(0));
+        this.arregloElementosOCR.remove(datosVitales.get(1));
     }
     
     public void EliminarElementosBasura(){
-        Iterator<String> iterator2 = this.arr.iterator();
+        Iterator<String> iterator2 = this.arregloElementosOCR.iterator();
         while (iterator2.hasNext()) {
             String elemento = iterator2.next();
             if(verificarCuatroNumeros(elemento)){
@@ -98,7 +98,7 @@ public class ManejoCadenas {
     }
     
     public void EncontrarNombres(){
-        Iterator<String> iterator = this.arr.iterator();
+        Iterator<String> iterator = this.arregloElementosOCR.iterator();
         while (iterator.hasNext()) {
             String elemento = iterator.next();
             
@@ -150,7 +150,7 @@ public class ManejoCadenas {
         int posicionDomicilio = 0;
         int posicionEstado = 0;
         int indiceGeneral = 0;
-        for (String elemento : this.arr){
+        for (String elemento : this.arregloElementosOCR){
             if (elemento.contains("DOMI")){
                 posicionDomicilio = indiceGeneral;
             }
@@ -161,12 +161,12 @@ public class ManejoCadenas {
         }
      
         if (posicionDomicilio != -1 && posicionEstado != -1) {
-            LinkedList<String> elementosEntre = new LinkedList<>(arr.subList(posicionDomicilio + 1, posicionEstado + 1));
+            LinkedList<String> elementosEntre = new LinkedList<>(arregloElementosOCR.subList(posicionDomicilio + 1, posicionEstado + 1));
             if (!elementosEntre.isEmpty() && !elementosEntre.getFirst().equals("C")) {
                 elementosEntre.set(0, "C");
             }
-            this.arr.removeAll(elementosEntre);
-            this.arr.remove(posicionDomicilio);
+            this.arregloElementosOCR.removeAll(elementosEntre);
+            this.arregloElementosOCR.remove(posicionDomicilio);
             
             ciudadano.setDomicilio(unirElementos(elementosEntre));
         } else {
@@ -175,7 +175,7 @@ public class ManejoCadenas {
     }
     
     public LinkedList<String> DevolverElementosNoIdentificados(){
-        return arr;
+        return arregloElementosOCR;
     }
     
     public String[] dividirPorSaltosDeLinea(String cadena) {

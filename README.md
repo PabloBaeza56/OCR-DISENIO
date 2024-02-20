@@ -51,7 +51,9 @@ Esta clase tiene un constructor únicamente inicializando un hash Set de Objetos
   Aclaración: ¿Por qué hay 2 funciones de recorte de imágenes?
   La razón de que exista 2 funciones de recorte es debido a que cuando se aplicó la función EncontrarContornos, para que el proceso fuera exitoso se requirió aplicar ciertos filtros para que pudiera funcionar correctamente el procedimiento, sin embargo con cada proceso que le realizamos a la imagen, su calidad disminuyó, lo que provoca que los procesos de la FASE II no se puedan realizar adecuadamente, anudado a eso durante el desarrollo se detectó que la función incorporada de recorte de OpenCv, bajaba demasiado la calidad de la imagen. Aunque deterioraba la imagen se conservó la función ya que su ejecución es muy rápida por lo es idóneo cuando se requiere analizar muchas hojas. El proceso actual RecortarImagen utiliza una librería perteneciente a Apache el cual, aunque tarda ligeramente más en ejecutarse mantiene fiel la calidad de la imagen original que recibe como argumento. Así como devuelve la imagen en la ruta absoluta que tú le indiques, lo que permite conectarla con otro proceso.
 
+### PDFtoPNGConverter
 
+Como su nombre lo indica, convierte archivos PDF a imágenes en formato PNG, recibe como argumento la ruta absoluta de un archivo PDF, y devuelve según el directorio indicado en el argumento, las N páginas del documento convertidos en imágenes PNG, cabe aclarar que las imágenes PNG se devuelven por separado (individuales, una por cada página). Esta función no se utilizó en el código final, sin embargo, se dejó en caso de que los documentos existentes requieran ser transformados de formato.
 # Coordenadas.java
 
 Coordenadas es la clase que guarda objetos de tipo coordenadas, una coordenada está compuesta por 4 elementos:
@@ -85,9 +87,7 @@ Como se mencionó con anterioridad, la fase II es la encargada de la realizació
 
   
 
-### PDFtoPNGConverter
 
-Como su nombre lo indica, convierte archivos PDF a imágenes en formato PNG, recibe como argumento la ruta absoluta de un archivo PDF, y devuelve según el directorio indicado en el argumento, las N páginas del documento convertidos en imágenes PNG, cabe aclarar que las imágenes PNG se devuelven por separado (individuales, una por cada página). Esta función no se utilizó en el código final, sin embargo, se dejó en caso de que los documentos existentes requieran ser transformados de formato.
 
 ### ManejoCadenas
 Esta sin dudas es una de las clases más importantes de nuestro programa, ya que es la que nos va a devolver los datos concretos que requerimos. Posee un constructor que recibe 2 parametros, la cadenaOriginal la cual es el producto de las funciones de OCR y el objeto PersonaINE ciudadano el cual va a servir para guardar los datos recuperados. En el constructor se va a inicializar una LinkedList que va a ser el encargado de guardar todas las sub cadenas pertenecientes a la cadenaOriginal, así como también se va a inicializar un ArrayList donde se guardan ciertos Datos Vitales los cuales son la sub cadena correspondiente a la CURP y la sub cadena correspondiente a la clave de Elector.
@@ -175,4 +175,5 @@ Actualmente el sistema se encuentra en fase de Prueba de Concepto, como un produ
 - El sistema manipulando la cadena de la clave de elector correspondiente recupera los caracteres que corresponden a la entidad federativa del ciudadano y los concatena
 - El sistema manipulando las subcadenas restante recupera los elementos que se encuentre entre alguna subcadena que contenga la cadena “DOMI” y alguna subcadena que contenga 3 letras mayúsculas seguidas. (Las cuales representan el estado de residencia del ciudadano.
 
-
+# Diagrama de clases
+C:\Users\pablo\OneDrive\Escritorio\LIS-UADY\out\diagramaClases\diagramaClases.png

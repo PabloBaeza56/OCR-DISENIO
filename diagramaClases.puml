@@ -1,0 +1,192 @@
+@startuml
+
+package main {
+    class ClaveDeElector {
+        - primeraLetraPrimerApellido: char
+        - segundaLetraPrimerApellido: char
+        - primeraLetraSegundoApellido: char
+        - segundaLetraSegundoApellido: char
+        - primeraLetraNombre: char
+        - segundaLetraNombre: char
+        - anioPrimerDigito: char
+        - anioSegundoDigito: char
+        - mesPrimerDigito: char
+        - mesSegundoDigito: char
+        - diaPrimerDigito: char
+        - diaSegundoDigito: char
+        - entidadFederativaPrimerDigito: char
+        - entidadFederativaSegundoDigito: char
+        - sexo: char
+
+        + ClaveDeElector(cadenaOficial: String)
+        + getPrimeraLetraPrimerApellido(): char
+        + getSegundaLetraPrimerApellido(): char
+        + getPrimeraLetraSegundoApellido(): char
+        + getSegundaLetraSegundoApellido(): char
+        + getPrimeraLetraNombre(): char
+        + getSegundaLetraNombre(): char
+        + getAnioPrimerDigito(): char
+        + getAnioSegundoDigito(): char
+        + getMesPrimerDigito(): char
+        + getMesSegundoDigito(): char
+        + getDiaPrimerDigito(): char
+        + getDiaSegundoDigito(): char
+        + getEntidadFederativaPrimerDigito(): char
+        + getEntidadFederativaSegundoDigito(): char
+        + getSexo(): char
+    }
+
+    class Coordenadas {
+        - static df: DecimalFormat
+        - esquinaSuperiorIzquierda: Punto
+        - esquinaSuperiorDerecha: Punto
+        - esquinaInferiorIzquierda: Punto
+        - esquinaInferiorDerecha: Punto
+
+        + Coordenadas(esquinaSuperiorIzquierda: Punto, esquinaSuperiorDerecha: Punto, esquinaInferiorIzquierda: Punto, esquinaInferiorDerecha: Punto)
+        + getEsquinaSuperiorIzquierda(): Punto
+        + setEsquinaSuperiorIzquierda(esquinaSuperiorIzquierda: Punto): void
+        + getEsquinaSuperiorDerecha(): Punto
+        + setEsquinaSuperiorDerecha(esquinaSuperiorDerecha: Punto): void
+        + getEsquinaInferiorIzquierda(): Punto
+        + setEsquinaInferiorIzquierda(esquinaInferiorIzquierda: Punto): void
+        + getEsquinaInferiorDerecha(): Punto
+        + setEsquinaInferiorDerecha(esquinaInferiorDerecha: Punto): void
+        + toString(): String
+        + equals(obj: Object): boolean
+        + hashCode(): int
+    }
+
+    class CoordenadasRojas {
+        + CoordenadasRojas()
+        + CoordenadasRojas(esquinaSuperiorIzquierda: Punto, esquinaSuperiorDerecha: Punto, esquinaInferiorIzquierda: Punto, esquinaInferiorDerecha: Punto)
+        + setCoordenadas(rojo: CoordenadasRojas): void
+        + toString(): String
+    }
+    
+
+    class ExcepcionesPropias {
+        + ExcepcionesPropias(mensaje: String)
+    }
+    
+    class ManejoCadenas {
+        - arregloElementosOCR: LinkedList<String>
+        - datosVitales: ArrayList<String>
+        - elector: ClaveDeElector
+        - cadenaOriginal: String
+        - ciudadano: PersonaINE
+
+        + ManejoCadenas(cadenaOriginal: String, ciudadano: PersonaINE)
+        + LimpiarCadenaValoresBasura(): String
+        + VerificarINE(): void
+        + GuardarSubcadenasConMasDeUnDigito(nuevaCadena: String): void
+        + BuscarCURPyClaveElector(): void
+        + EncontrarClaveElector(): void
+        + EliminarElementosBasura(): void
+        + EncontrarNombres(): void
+        + EncontrarSexo(): void
+        + EncontrarEntidadFederativa(): void
+        + EncontrarFechaNacimiento(): void
+        + EncontrarDomicilio(): void
+        + DevolverElementosNoIdentificados(): LinkedList<String>
+        + dividirPorSaltosDeLinea(cadena: String): String[]
+        + verificarCuatroNumeros(subcadena: String): boolean
+        + RepararCURP(cadena: String): String
+        + RepararClaveElector(cadena: String): String
+        + unirElementos(lista: LinkedList<String>): String
+    }
+    
+
+    class ManejoImagenes {
+        - coordenadasSet: Set<CoordenadasRojas>
+        + ManejoImagenes()
+        + EncontrarContornos(ArchivoVerificar: String, ArchivoSalida: String): void
+        + detectarRostros(cadenaRuta: String): int
+        + PDFtoPNGConverter(pdfFilePath: String, outputDir: String): int
+        + DividirImagenesPorContorno(cadenaRuta: String): void
+        + RecortarImagen(inputImagePath: String, coordenadas: CoordenadasRojas, outputImagePath: String): void
+    }
+
+   
+   
+
+    class OCR {
+        - tesseract: Tesseract
+        - tessdataPath: String
+        + OCR()
+        + MetodoAlternativo(URLimagen: String): String
+        - doOCRWithBufferedImage(imagePath: String): String
+    }
+    
+   
+
+    class PersonaINE {
+        - primerApellido: String
+        - segundoApellido: String
+        - nombre: String
+        - domicilio: String
+        - claveElector: String
+        - curp: String
+        - fechaNacimiento: String
+        - numeroEntidadFederativa: String
+        - sexo: char
+
+        + getNumeroEntidadFederativa(): String
+        + setNumeroEntidadFederativa(numeroEntidadFederativa: String): void
+        + getPrimerApellido(): String
+        + setPrimerApellido(primerApellido: String): void
+        + getSegundoApellido(): String
+        + setSegundoApellido(segundoApellido: String): void
+        + getNombre(): String
+        + setNombre(nombre: String): void
+        + getDomicilio(): String
+        + setDomicilio(domicilio: String): void
+        + getClaveElector(): String
+        + setClaveElector(claveElector: String): void
+        + getCurp(): String
+        + setCurp(curp: String): void
+        + getFechaNacimiento(): String
+        + setFechaNacimiento(fechaNacimiento: String): void
+        + getSexo(): char
+        + setSexo(sexo: char): void
+        + toString(): String
+    }
+
+    class Punto {
+        - x: float
+        - y: float
+
+        + Punto(x: float, y: float)
+        + getX(): float
+        + setX(x: int): void
+        + getY(): float
+        + setY(y: int): void
+        + toString(): String
+    }
+
+    class Main {
+        + main(args: String[]): void
+    }
+
+   
+    ManejoImagenes --> ExcepcionesPropias
+    ManejoImagenes --> OpenCv
+    ManejoImagenes --> CoordenadasRojas
+    CoordenadasRojas --|> Coordenadas
+    Coordenadas --> Punto
+
+    OCR --> Tesseract
+
+    ManejoCadenas o--> ClaveDeElector
+    ManejoCadenas o--> PersonaINE
+
+    ManejoCadenas --> ExcepcionesPropias
+    ExcepcionesPropias --|> Exception
+    Main --> ManejoImagenes
+    Main --> OCR
+    OCR --> ManejoImagenes
+    Main --> ManejoCadenas
+    
+}
+
+@enduml

@@ -26,15 +26,26 @@ La fase siguiente corresponde al escaneado de la imagen mediante técnicas de OC
 
 **Contexto:** Cuando se realiza el proceso de OCR la función te retorna todo el texto que encuentra sin excepciones, no es posible saber exactamente qué pedazo de este texto corresponde al nombre (u otro dato deseado), por lo que se emplearán técnicas de manejo de cadenas (que se explicarán formalmente más adelante) para devolver exactamente los datos que se solicitan de manera estructurada.
 
-### FASE I
+# FASE I
 
 Como se mencionó con anterioridad la fase I es la encargada de la manipulación y análisis de la imagen para determinar si corresponde a una credencial de elector INE, así como su preparación para la fase siguiente. A continuación, se hará mención de las clases que componen esta fase, para así posteriormente explicar método por método su funcionalidad, igualmente se justificarán ciertas decisiones de diseño que a simple vista pueden ser incoherentes.
 
-- **ManejoImagenes.java** – Esta clase, como menciona su nombre, es encargada de todas las operaciones relacionadas con imágenes, tales como encontrar coordenadas, dibujar rectángulos, detectar caras entre otras operaciones que serán descritas próximamente.
-- **Coordenadas.java** – Es la clase que sirve para guardar un objeto coordenada, el cual guarda las posiciones correspondientes a las 4 esquinas de una imagen. 
-- **CoordenadasRojas.java** – Es la clase hija de Coordenadas, estas coordenadas hacen referencia explícita, a las coordenadas obtenidas cuando se encuentra un rectángulo con ciertas dimensiones. Se le llaman rojas debido a que cuando se dibujan sobre un archivo temporal el rectángulo encontrado, este es de color rojo.
-- **Punto.java** – Este objeto es el elemento atómico de una coordenada (el par ordenado X,Y), existe una relación de agregación con la clase Coordenadas.java.
-- **ExcepcionesPropias.java** – Una clase que hereda de la clase Exception y contiene un único método que recibe como argumento un mensaje de error, el cual lanza una excepción personalizada (proveniente de la clase padre) que únicamente contiene un mensaje.
+- `ManejoImagenes.java`: Esta clase, como menciona su nombre, es encargada de todas las operaciones relacionadas con imágenes, tales como encontrar coordenadas, dibujar rectángulos, detectar caras, entre otras operaciones que serán descritas próximamente.
+
+- `Coordenadas.java`: Es la clase que sirve para guardar un objeto coordenada, el cual guarda las posiciones correspondientes a las 4 esquinas de una imagen.
+
+- `CoordenadasRojas.java`: Es la clase hija de `Coordenadas`, estas coordenadas hacen referencia explícita a las coordenadas obtenidas cuando se encuentra un rectángulo con ciertas dimensiones. Se le llaman rojas debido a que cuando se dibujan sobre un archivo temporal el rectángulo encontrado, este es de color rojo.
+
+- `Punto.java`: Este objeto es el elemento atómico de una coordenada (el par ordenado X,Y), existe una relación de agregación con la clase `Coordenadas.java`.
+
+- `haarcascade_frontalface_default.xml`: Este archivo es el entrenamiento por defecto usado para la detección de caras frontales, puede ser nuevamente descargado en la siguiente [liga](https://github.com/opencv/opencv/blob/4.x/data/haarcascades/haarcascade_frontalface_default.xml).
+
+- `ImagenPrimerProceso.png`: Es la imagen de ejemplo de una entrada válida para la presente FASE.
+
+- `ExcepcionesPropias.java`: Una clase que hereda de la clase `Exception` y contiene un único método que recibe como argumento un mensaje de error, el cual lanza una excepción personalizada (proveniente de la clase padre) que únicamente contiene un mensaje.
+
+Ahora ya que conocemos todas las clases que conforman esta clase procederemos a explicarlas a profundidad, para la siguiente sección omitiremos a `haarcascade_frontalface_default.xml`, `ImagenPrimerProceso.png` y `ExcepcionesPropias.java`, debido a que no forman parte del algoritmo en general (Se incluye a `ExcepcionesPropias.java`, ya que en la descripción general se explicó toda su funcionalidad).
+
 
 ### ManejoImágenes.java
 
@@ -48,12 +59,12 @@ Esta clase tiene un constructor únicamente inicializando un hash Set de Objetos
   - Requiere que se modifique la ruta absoluta correspondiente al detector de caras el cual es haarcascade_frontalface_default.xml, anteriormente se proporcionó el link para descargar el archivo mencionado.
 - **RecortarImagen:** Como su nombre lo indica procede a recortar una imagen de un archivo específico. Toma como argumento la ruta absoluta del archivo original, un objeto coordenadas y finalmente una ruta absoluta de salida.
 
-  Aclaración: ¿Por qué hay 2 funciones de recorte de imágenes?
+  ### Aclaración: ¿Por qué hay 2 funciones de recorte de imágenes?
   La razón de que exista 2 funciones de recorte es debido a que cuando se aplicó la función EncontrarContornos, para que el proceso fuera exitoso se requirió aplicar ciertos filtros para que pudiera funcionar correctamente el procedimiento, sin embargo con cada proceso que le realizamos a la imagen, su calidad disminuyó, lo que provoca que los procesos de la FASE II no se puedan realizar adecuadamente, anudado a eso durante el desarrollo se detectó que la función incorporada de recorte de OpenCv, bajaba demasiado la calidad de la imagen. Aunque deterioraba la imagen se conservó la función ya que su ejecución es muy rápida por lo es idóneo cuando se requiere analizar muchas hojas. El proceso actual RecortarImagen utiliza una librería perteneciente a Apache el cual, aunque tarda ligeramente más en ejecutarse mantiene fiel la calidad de la imagen original que recibe como argumento. Así como devuelve la imagen en la ruta absoluta que tú le indiques, lo que permite conectarla con otro proceso.
 
-### PDFtoPNGConverter
+- **PDFtoPNGConverter:** Como su nombre lo indica, convierte archivos PDF a imágenes en formato PNG, recibe como argumento la ruta absoluta de un archivo PDF, y devuelve según el directorio indicado en el argumento, las N páginas del documento convertidos en imágenes PNG, cabe aclarar que las imágenes PNG se devuelven por separado (individuales, una por cada página). Esta función no se utilizó en el código final, sin embargo, se dejó en caso de que los documentos existentes requieran ser transformados de formato.
 
-Como su nombre lo indica, convierte archivos PDF a imágenes en formato PNG, recibe como argumento la ruta absoluta de un archivo PDF, y devuelve según el directorio indicado en el argumento, las N páginas del documento convertidos en imágenes PNG, cabe aclarar que las imágenes PNG se devuelven por separado (individuales, una por cada página). Esta función no se utilizó en el código final, sin embargo, se dejó en caso de que los documentos existentes requieran ser transformados de formato.
+
 # Coordenadas.java
 
 Coordenadas es la clase que guarda objetos de tipo coordenadas, una coordenada está compuesta por 4 elementos:
@@ -62,17 +73,23 @@ Coordenadas es la clase que guarda objetos de tipo coordenadas, una coordenada e
 - Punto esquinaInferiorIzquierda
 - Punto esquinaInferiorDerecha
 
-La clase contiene los getters y setters correspondientes a los atributos mencionados. También contiene el método sobrescrito toString() por si se requiere imprimir en algún momento el objeto. Además, contiene el método sobrescrito equals(), modificado ligeramente para tener una tolerancia de +/- 3, lo que significa que si una medida tiene de largo 10 y la otra 13, las considerará iguales. Esto se debe a falsos positivos o duplicaciones de coordenadas durante el proceso de recorte. También contiene el método sobrescrito hashcode(), que se utiliza para representar de manera única a un objeto, incluso si tienen exactamente los mismos atributos.
+La clase contiene los getters y setters correspondientes a los atributos mencionados. 
+
+También contiene el método sobrescrito toString() por si se requiere imprimir en algún momento el objeto. 
+Además, contiene el método sobrescrito equals(), modificado ligeramente para tener una tolerancia de +/- 3, lo que significa que si una medida tiene de largo 10 y la otra 13, las considerará iguales. 
+Esto se debe a falsos positivos o duplicaciones de coordenadas durante el proceso de recorte. 
+También contiene el método sobrescrito hashcode(), que se utiliza para representar de manera única a un objeto, incluso si tienen exactamente los mismos atributos.
 
 # CoordenadasRojas.java
 
 Es la clase hija de Coordenadas. Contiene 2 constructores válidos: uno es el constructor vacío, que inicializa la coordenada en 0, y el otro es el constructor que recibe 4 argumentos correspondientes a los puntos de las esquinas. Para este último constructor, se llama al constructor padre con los argumentos mencionados. También contiene el método setCoordenadas(), que asigna atributos de la coordenada a otra coordenada. Además, tiene un método toString() que imprime una leyenda mencionando que las coordenadas son rojas.
 
-Aclaración: ¿Por qué se hace la distinción de color de coordenadas? El sistema de detección de INE tiene amplio margen de mejora, y en un futuro podría requerirse recortar únicamente la cara del ciudadano que aparece en la INE. Hacer esta distinción facilita la identificación de las coordenadas relacionadas con diferentes elementos.
+### Aclaración: ¿Por qué se hace la distinción de color de coordenadas? 
+El sistema de detección de INE tiene amplio margen de mejora, supongamos que en un futuro quisiera recortar únicamente la cara del ciudadano que aparece en la INE, si todo se manejara con coordenadas sería un completo caos saber, a que elemento hacen referencia cada coordenada, por lo tanto, se realiza esta distinción, quien sabe en un futuro las coordenadas azules podrían hacer acto de presencia en el programa informático.
 
 # Punto.java
 
-Contiene los atributos X, Y correspondientes a una posición en el plano cartesiano. La clase contiene getters y setters de los respectivos atributos, así como la sobreescritura del método toString() para imprimir de manera elegante la coordenada deseada.
+Únicamente contiene los atributos X, Y correspondientes a una posición en el plano cartesiano, la clase contiene getters y setters de los respectivos atributos, así como la sobre escritura del método toString(), para imprimir de manera elegante la coordenada deseada.
 
 # FASE II
 
@@ -85,44 +102,83 @@ Como se mencionó con anterioridad, la fase II es la encargada de la realizació
 - **PersonalINE.java:** Clase que genera objetos "ciudadano" donde se guardan los datos encontrados en la INE, por si es necesario realizar más operaciones con los datos encontrados.
 - **spa.traineddata:** Archivo que contiene el entrenamiento necesario para el reconocimiento de caracteres.
 
-  
+Ahora ya que conocemos todas las clases que conforman esta clase procederemos a explicarlas a profundidad, para la siguiente sección omitiremos a spa.traineddata y ImagenSegundoProceso.png, ya que no forman parte del algoritmo del programa.  
 
+### OCR.java
+
+La clase `OCR` contiene un constructor vacío, el cual instancia la clase `Tesseract` y proporciona las preconfiguraciones necesarias para el correcto funcionamiento del reconocimiento de caracteres. Es importante destacar que se debe modificar el `testdataPath` según la ruta absoluta en la que se encuentre en el equipo de cómputo.
+
+Cuenta con un método denominado `MetodoAlternativo`, el cual llama al método `doOCRWithBufferedImage`, encargado formalmente del proceso de OCR. La razón de esto es que `doOCRWithBufferedImage` es privado, por lo que se requiere un método que sirva como "puerta de entrada" para poder ejecutarlo.
+
+### PersonaINE.java
+
+Esta clase sirve como apoyo para guardar los elementos obtenidos de los procesos en la clase `ManejoCadenas.java`. Al ser una clase únicamente para guardar datos, cuenta con los siguientes atributos, así como su respectiva función `toString()` para imprimir de forma elegante:
+
+- `primerApellido`
+- `segundoApellido`
+- `nombre`
+- `domicilio`
+- `claveElector`
+- `curp`
+- `fechaNacimiento`
+- `numeroEntidadFederativa`
+- `sexo`
+
+### ClaveDeElector.java
+
+La clave de elector es una cadena compuesta de 18 caracteres, donde cada carácter representa ciertos datos. Por ejemplo:
+
+1. Primer y segundo dígito: Representan las dos consonantes iniciales del primer apellido.
+2. Tercer y cuarto dígito: Corresponden a las dos consonantes iniciales del segundo apellido.
+3. Quinto y sexto dígito: Indican las dos consonantes iniciales del nombre del elector.
+4. Del séptimo al duodécimo dígito: Representan la fecha de nacimiento (dos dígitos para el año, dos para el mes y dos para el día).
+5. Décimo tercer y décimo cuarto dígito: Son el número de la entidad federativa donde nació el titular.
+6. Décimo quinto dígito: Es una letra que identifica el género (por ejemplo, “M” para masculino o “F” para femenino).
+7. Décimo sexto, décimo séptimo y décimo octavo dígito: Forman la homoclave, compuesta por tres dígitos asignados aleatoriamente por el INE.
+
+La clase `ClaveDeElector` tiene un constructor que recibe como parámetro una cadena correspondiente a la clave de elector. Luego se procede a recorrer caracter por caracter la cadena para asignar los elementos al arreglo correspondiente, de tal manera que cada carácter tiene asociado un getter que menciona de manera explícita de qué se trata.
+
+Aunque puede parecer un poco tedioso, a largo plazo esta pequeña clase será de gran utilidad para todos los procesos siguientes.
+
+**¿Por qué es una clase separada y no se hizo agregación a la clase PersonaINE?**
+
+Hubiera sido completamente válido; sin embargo, no proporcionaría suficiente claridad al desarrollador. Por ejemplo, `caracteres[5]` no sabría el desarrollador que este carácter está asociado a `segundaLetraNombre`. La separación de la clase proporciona una estructura más clara y explícita, facilitando la comprensión y mantenimiento del código.
 
 
 ### ManejoCadenas
 Esta sin dudas es una de las clases más importantes de nuestro programa, ya que es la que nos va a devolver los datos concretos que requerimos. Posee un constructor que recibe 2 parametros, la cadenaOriginal la cual es el producto de las funciones de OCR y el objeto PersonaINE ciudadano el cual va a servir para guardar los datos recuperados. En el constructor se va a inicializar una LinkedList que va a ser el encargado de guardar todas las sub cadenas pertenecientes a la cadenaOriginal, así como también se va a inicializar un ArrayList donde se guardan ciertos Datos Vitales los cuales son la sub cadena correspondiente a la CURP y la sub cadena correspondiente a la clave de Elector.
 
-¿Por qué utilizas LinkedList y un ArrayList?
+#### ¿Por qué utilizas LinkedList y un ArrayList?
 
 Se utiliza ArrayList para los datos Vitales debido a que, aunque sabemos que en la INE solo existen 2 sub cadenas que corresponden a la CURP y la clave de Elector, puede darse el caso (fatídico) donde se encuentre otra cadena de 18 caracteres, si fuese un Array simple, correríamos con el riesgo que se dispare una excepción por desbordamiento del Arreglo, más adelante en el método EncontrarClaveElector toma más sentido esta decisión. Se utiliza Linked List ya que hay una sección de código donde si se encuentra una sub cadena que cumple ciertas condiciones, la guardas en un atributo de un Objeto INE, y procedes a eliminarlo. LinkedList nos ofrece la habilidad de eliminar elementos mientras se itera sobre él, sin peligro de disparar una excepción.
 
 Aclarado este punto procedemos a explicar la funcionalidad de cada método.
 
-- LimpiarCadenaValoresBasura: Recibe como argumento una cadena (Presumiblemente la cadena producto del proceso de OCR) y procede a eliminar todos aquellos valores que no son letras mayúsculas ni números.
-- VerificarINE: Itera sobre la cadena para encontrar ciertas palabras clave que corresponden a una INE, tales como VOTAR, ELECTORAL, CREDENCIAL, etc; dispara una excepción si no encuentra ninguna de estas palabras;
-- GuardarSubcadenasConMasDeUnDigito: Guarda únicamente las subcadenas las cuales contengan más de un carácter.
-- BuscarCURPyClaveElector: Guarda en el ArrayList datosVitales, aquellas subcadenas las cuales contengan exactamente 18 caracteres.
-- EncontrarClaveElector: Dispara una excepción si ArrayList datosVitales tiene un valor de elementos diferente a 2, utiliza una expresión regular para determinar si los primeros 6 caracteres de uno de los elementos de datosVitales, corresponden a letras mayúscula en caso que sea cierto asigna dicho valor a un nuevo Objeto de tipo ClaveDeElector, análogamente salva tanto la CURP y la clave de elector en la instancia ciudadano previamente inicializada en el constructor.
-- EliminarElementosBasura: Es la función que itera sobre los elementos LinkedList<String> arregloElementosOCR, con tal de eliminar aquellos elementos que contengan ciertas cadenas predeterminadas o aquellas que posean 4 números seguidos. Esto con tal de eliminar aquellas subcadenas que no agreguen valor.
-- EncontrarNombres: Aquí es donde hace presencia los atributos de la clase ClaveDeElector. Se iterará sobre todos los elementos del arreglo, por ejemplo: Si se encuentra con una sub cadena que contenga el carácter de elector.getPrimeraLetraPrimerApellido() y elector.getSegundaLetraPrimerApellido(). Consideraremos que esa sub cadena corresponde al primer apellido. La misma lógica se aplica para el segundo apellido y el nombre.
-- EncontrarSexo: Recupera el char asociado al texto de la instancia Sexo del Objeto Clave de elector, finalmente se agregan al objeto ciudadano(PersonalINE).
-- EncontrarEntidadFederativa: Recupera los chars asociados a la entidad federativa correspondientes al Objeto de la clave de elector, finalmente se agregan al objeto ciudadano(PersonalINE).
-- EncontrarFechaNacimiento: Del objeto generado de la clave de elector, devuelve los valores asociados al dia, mes y año de nacimiento, y los formatea para que sean una fecha completa en formato dd-MM-yyyy, finalmente se agregan al objeto ciudadano(PersonalINE).
-- EncontrarDomicilio: Hallar el domicilio en una INE no es tarea sencilla, existen infinitas combinaciones de dirección, por lo que es imposible generalizarlos, por lo tanto, procederemos a explicar detalladamente este metodo.
+- **LimpiarCadenaValoresBasura**: Recibe como argumento una cadena (Presumiblemente la cadena producto del proceso de OCR) y procede a eliminar todos aquellos valores que no son letras mayúsculas ni números.
+- **VerificarINE**: Itera sobre la cadena para encontrar ciertas palabras clave que corresponden a una INE, tales como VOTAR, ELECTORAL, CREDENCIAL, etc; dispara una excepción si no encuentra ninguna de estas palabras;
+- **GuardarSubcadenasConMasDeUnDigito**: Guarda únicamente las subcadenas las cuales contengan más de un carácter.
+- **BuscarCURPyClaveElector**: Guarda en el ArrayList datosVitales, aquellas subcadenas las cuales contengan exactamente 18 caracteres.
+- **EncontrarClaveElector**: Dispara una excepción si ArrayList datosVitales tiene un valor de elementos diferente a 2, utiliza una expresión regular para determinar si los primeros 6 caracteres de uno de los elementos de datosVitales, corresponden a letras mayúscula en caso que sea cierto asigna dicho valor a un nuevo Objeto de tipo ClaveDeElector, análogamente salva tanto la CURP y la clave de elector en la instancia ciudadano previamente inicializada en el constructor.
+- **EliminarElementosBasura**: Es la función que itera sobre los elementos LinkedList<String> arregloElementosOCR, con tal de eliminar aquellos elementos que contengan ciertas cadenas predeterminadas o aquellas que posean 4 números seguidos. Esto con tal de eliminar aquellas subcadenas que no agreguen valor.
+- **EncontrarNombres**: Aquí es donde hace presencia los atributos de la clase ClaveDeElector. Se iterará sobre todos los elementos del arreglo, por ejemplo: Si se encuentra con una sub cadena que contenga el carácter de elector.getPrimeraLetraPrimerApellido() y elector.getSegundaLetraPrimerApellido(). Consideraremos que esa sub cadena corresponde al primer apellido. La misma lógica se aplica para el segundo apellido y el nombre.
+- **EncontrarSexo**: Recupera el char asociado al texto de la instancia Sexo del Objeto Clave de elector, finalmente se agregan al objeto ciudadano(PersonalINE).
+- **EncontrarEntidadFederativa**: Recupera los chars asociados a la entidad federativa correspondientes al Objeto de la clave de elector, finalmente se agregan al objeto ciudadano(PersonalINE).
+- **EncontrarFechaNacimiento**: Del objeto generado de la clave de elector, devuelve los valores asociados al dia, mes y año de nacimiento, y los formatea para que sean una fecha completa en formato dd-MM-yyyy, finalmente se agregan al objeto ciudadano(PersonalINE).
+- **EncontrarDomicilio**: Hallar el domicilio en una INE no es tarea sencilla, existen infinitas combinaciones de dirección, por lo que es imposible generalizarlos, por lo tanto, procederemos a explicar detalladamente este metodo.
 
-  Nota: Este es el último método que se debe ejecutar antes de terminar toda la fase.
+  **Nota: Este es el último método que se debe ejecutar antes de terminar toda la fase.**
 
   - Sabemos que, en una INE, la cadena del domicilio se encuentra inmediatamente a la derecha de la palabra DOMICILIO, cuando se encuentre la pablara que contenga la sub cadena DOMI, se guardara el índice correspondiente denominado posicionDomicilio
   - Sabemos que el domicilio de una INE siempre termina con tres letras mayúsculas, por ejmplo: YUC, también vamos a buscar el índice de la subcadena que únicamente contenga 3 letras mayúsculas, denominado posicionEstado.
   - Ahora dentro de la LinkedList vamos a recuperar todos los elelemntos que se encuentren entre el índice de posicionDomicilio y el índice de posicionEstado.
   - Removeremos del Linked List todos los elementos que encontramos.
   - Todos los elementos que recuperamos los guardaremos en el campo correspondiente del objeto de PersonaINE.
-- DevolverElementosNoIdentificados: Devuelve todos los elementos sobrantes, aquellas sub cadenas que no pudieron ser analizadas o no pertenecen a ningún atributo.
-- dividirPorSaltosDeLinea: Divide una cadena mediante sus saltos de línea y lo guarda en un arreglo de Strings
-- verificarCuatroNumeros: Mediante expresiones regulares verifica si una sub cadena contiene 4 numeros seguidos.
-- RepararCURP: El OCR no es perfecto algunas veces detecta los “O” como 0, lo cual es erróneo, sabemos que hay ciertos caracteres dentro del CURP que corresponden a números, entonces realiza el cambio únicamente si están en los dígitos correspondientes a los números (Fecha de Nacimiento).
-- RepararClaveElector: El OCR no es perfecto algunas veces detecta los “O” como 0, lo cual es erróneo, sabemos que hay ciertos caracteres dentro de la Clave de Elector que corresponden a números, entonces realiza el cambio únicamente si están en los dígitos correspondientes a los números (Fecha
-- unirElementos: Concatena los elementos de un LinkedList<String> para devolver una única cadena.
+- **DevolverElementosNoIdentificados**: Devuelve todos los elementos sobrantes, aquellas sub cadenas que no pudieron ser analizadas o no pertenecen a ningún atributo.
+- **dividirPorSaltosDeLinea**: Divide una cadena mediante sus saltos de línea y lo guarda en un arreglo de Strings
+- **verificarCuatroNumeros**: Mediante expresiones regulares verifica si una sub cadena contiene 4 numeros seguidos.
+- **RepararCURP**: El OCR no es perfecto algunas veces detecta los “O” como 0, lo cual es erróneo, sabemos que hay ciertos caracteres dentro del CURP que corresponden a números, entonces realiza el cambio únicamente si están en los dígitos correspondientes a los números (Fecha de Nacimiento).
+- **RepararClaveElector**: El OCR no es perfecto algunas veces detecta los “O” como 0, lo cual es erróneo, sabemos que hay ciertos caracteres dentro de la Clave de Elector que corresponden a números, entonces realiza el cambio únicamente si están en los dígitos correspondientes a los números (Fecha
+- **unirElementos**: Concatena los elementos de un LinkedList<String> para devolver una única cadena.
 
 ### Main.java
 
@@ -177,4 +233,6 @@ Actualmente el sistema se encuentra en fase de Prueba de Concepto, como un produ
 
 # Diagrama de clases
 ![Diagrama de Clases](diagramaClases.png)
+
+Puede consultar el docuemento original denominado DocumentacionOCR que se encuentra en la carpeta raiz del repositorio.
 

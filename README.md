@@ -1,6 +1,6 @@
 # Visión General del Sistema
 
-El propósito general de este artefacto de software es analizar un cierto documento (presumiblemente una fotocopia), verificar si corresponde a una identificación oficial (INE), para finalmente recuperar los datos valiosos tales como nombre, dirección domiciliaria, género, CURP, Clave de elector.
+El propósito general de este artefacto de software es analizar un cierto documento (presumiblemente una fotocopia que contenga las dos caras del INE), verificar si corresponde a una identificación oficial (INE), para finalmente recuperar los datos valiosos tales como nombre, dirección domiciliaria, género, CURP, Clave de elector.
 
 ## Justificación General
 
@@ -47,7 +47,7 @@ Como se mencionó con anterioridad la fase I es la encargada de la manipulación
 Ahora ya que conocemos todas las clases que conforman esta clase procederemos a explicarlas a profundidad, para la siguiente sección omitiremos a `haarcascade_frontalface_default.xml`, `ImagenPrimerProceso.png` y `ExcepcionesPropias.java`, debido a que no forman parte del algoritmo en general (Se incluye a `ExcepcionesPropias.java`, ya que en la descripción general se explicó toda su funcionalidad).
 
 
-### ManejoImágenes.java
+## ManejoImágenes.java
 
 Esta clase tiene un constructor únicamente inicializando un hash Set de Objetos Coordenada Roja, la razón de que se haya utilizado un hash set es que esta estructura no permite elementos duplicados, para esta funcionalidad de no permitir elementos duplicados se tuvo que sobrescribir los métodos equals() y hashcode() los cuales se encuentran explícitamente en la clase padre Coordenadas.java, de esta manera cualquier clase hija puede utilizar indirectamente estos métodos al entrar en el hash Set. Todas las funciones únicamente manipulan imágenes en formato PNG.
 
@@ -65,7 +65,7 @@ Esta clase tiene un constructor únicamente inicializando un hash Set de Objetos
 - **PDFtoPNGConverter:** Como su nombre lo indica, convierte archivos PDF a imágenes en formato PNG, recibe como argumento la ruta absoluta de un archivo PDF, y devuelve según el directorio indicado en el argumento, las N páginas del documento convertidos en imágenes PNG, cabe aclarar que las imágenes PNG se devuelven por separado (individuales, una por cada página). Esta función no se utilizó en el código final, sin embargo, se dejó en caso de que los documentos existentes requieran ser transformados de formato.
 
 
-# Coordenadas.java
+## Coordenadas.java
 
 Coordenadas es la clase que guarda objetos de tipo coordenadas, una coordenada está compuesta por 4 elementos:
 - Punto esquinaSuperiorIzquierda
@@ -80,14 +80,14 @@ Además, contiene el método sobrescrito equals(), modificado ligeramente para t
 Esto se debe a falsos positivos o duplicaciones de coordenadas durante el proceso de recorte. 
 También contiene el método sobrescrito hashcode(), que se utiliza para representar de manera única a un objeto, incluso si tienen exactamente los mismos atributos.
 
-# CoordenadasRojas.java
+## CoordenadasRojas.java
 
 Es la clase hija de Coordenadas. Contiene 2 constructores válidos: uno es el constructor vacío, que inicializa la coordenada en 0, y el otro es el constructor que recibe 4 argumentos correspondientes a los puntos de las esquinas. Para este último constructor, se llama al constructor padre con los argumentos mencionados. También contiene el método setCoordenadas(), que asigna atributos de la coordenada a otra coordenada. Además, tiene un método toString() que imprime una leyenda mencionando que las coordenadas son rojas.
 
 ### Aclaración: ¿Por qué se hace la distinción de color de coordenadas? 
 El sistema de detección de INE tiene amplio margen de mejora, supongamos que en un futuro quisiera recortar únicamente la cara del ciudadano que aparece en la INE, si todo se manejara con coordenadas sería un completo caos saber, a que elemento hacen referencia cada coordenada, por lo tanto, se realiza esta distinción, quien sabe en un futuro las coordenadas azules podrían hacer acto de presencia en el programa informático.
 
-# Punto.java
+## Punto.java
 
 Únicamente contiene los atributos X, Y correspondientes a una posición en el plano cartesiano, la clase contiene getters y setters de los respectivos atributos, así como la sobre escritura del método toString(), para imprimir de manera elegante la coordenada deseada.
 
@@ -104,13 +104,13 @@ Como se mencionó con anterioridad, la fase II es la encargada de la realizació
 
 Ahora ya que conocemos todas las clases que conforman esta clase procederemos a explicarlas a profundidad, para la siguiente sección omitiremos a spa.traineddata y ImagenSegundoProceso.png, ya que no forman parte del algoritmo del programa.  
 
-### OCR.java
+## OCR.java
 
 La clase `OCR` contiene un constructor vacío, el cual instancia la clase `Tesseract` y proporciona las preconfiguraciones necesarias para el correcto funcionamiento del reconocimiento de caracteres. Es importante destacar que se debe modificar el `testdataPath` según la ruta absoluta en la que se encuentre en el equipo de cómputo.
 
 Cuenta con un método denominado `MetodoAlternativo`, el cual llama al método `doOCRWithBufferedImage`, encargado formalmente del proceso de OCR. La razón de esto es que `doOCRWithBufferedImage` es privado, por lo que se requiere un método que sirva como "puerta de entrada" para poder ejecutarlo.
 
-### PersonaINE.java
+## PersonaINE.java
 
 Esta clase sirve como apoyo para guardar los elementos obtenidos de los procesos en la clase `ManejoCadenas.java`. Al ser una clase únicamente para guardar datos, cuenta con los siguientes atributos, así como su respectiva función `toString()` para imprimir de forma elegante:
 
@@ -124,7 +124,7 @@ Esta clase sirve como apoyo para guardar los elementos obtenidos de los procesos
 - `numeroEntidadFederativa`
 - `sexo`
 
-### ClaveDeElector.java
+## ClaveDeElector.java
 
 La clave de elector es una cadena compuesta de 18 caracteres, donde cada carácter representa ciertos datos. Por ejemplo:
 
@@ -145,7 +145,7 @@ Aunque puede parecer un poco tedioso, a largo plazo esta pequeña clase será de
 Hubiera sido completamente válido; sin embargo, no proporcionaría suficiente claridad al desarrollador. Por ejemplo, `caracteres[5]` no sabría el desarrollador que este carácter está asociado a `segundaLetraNombre`. La separación de la clase proporciona una estructura más clara y explícita, facilitando la comprensión y mantenimiento del código.
 
 
-### ManejoCadenas
+## ManejoCadenas
 Esta sin dudas es una de las clases más importantes de nuestro programa, ya que es la que nos va a devolver los datos concretos que requerimos. Posee un constructor que recibe 2 parametros, la cadenaOriginal la cual es el producto de las funciones de OCR y el objeto PersonaINE ciudadano el cual va a servir para guardar los datos recuperados. En el constructor se va a inicializar una LinkedList que va a ser el encargado de guardar todas las sub cadenas pertenecientes a la cadenaOriginal, así como también se va a inicializar un ArrayList donde se guardan ciertos Datos Vitales los cuales son la sub cadena correspondiente a la CURP y la sub cadena correspondiente a la clave de Elector.
 
 #### ¿Por qué utilizas LinkedList y un ArrayList?
@@ -180,7 +180,7 @@ Aclarado este punto procedemos a explicar la funcionalidad de cada método.
 - **RepararClaveElector**: El OCR no es perfecto algunas veces detecta los “O” como 0, lo cual es erróneo, sabemos que hay ciertos caracteres dentro de la Clave de Elector que corresponden a números, entonces realiza el cambio únicamente si están en los dígitos correspondientes a los números (Fecha
 - **unirElementos**: Concatena los elementos de un LinkedList<String> para devolver una única cadena.
 
-### Main.java
+## Main.java
 
 Es el archivo maestro que desencadena tanto las ETAPAS I y II. En el respectivo orden para que realicen sus funciones adecuadas, el orden en que se llaman las funciones no se debe alterar ya que provocaría errores inesperados.
 

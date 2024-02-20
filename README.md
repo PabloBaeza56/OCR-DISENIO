@@ -236,3 +236,11 @@ Actualmente el sistema se encuentra en fase de Prueba de Concepto, como un produ
 
 Puede consultar el docuemento original denominado DocumentacionOCR que se encuentra en la carpeta raiz del repositorio.
 
+# Ejemplos de entradas validas (FASE I)
+![Diagrama de Clases](definitivo.png)
+![Diagrama de Clases](definitivoDEF.png)
+
+# Ejemplos de entradas validas (FASE II)
+![Diagrama de Clases](salida.png)
+
+

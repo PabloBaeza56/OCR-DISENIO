@@ -176,4 +176,5 @@ Actualmente el sistema se encuentra en fase de Prueba de Concepto, como un produ
 - El sistema manipulando las subcadenas restante recupera los elementos que se encuentre entre alguna subcadena que contenga la cadena “DOMI” y alguna subcadena que contenga 3 letras mayúsculas seguidas. (Las cuales representan el estado de residencia del ciudadano.
 
 # Diagrama de clases
-C:\Users\pablo\OneDrive\Escritorio\LIS-UADY\out\diagramaClases\diagramaClases.png
+![Diagrama de Clases](diagramaClases.png)
+
